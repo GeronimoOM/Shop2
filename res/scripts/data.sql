@@ -1,0 +1,82 @@
+INSERT INTO `sh_departments` (`id`, `name`) VALUES (1, 'For Boys');
+INSERT INTO `sh_departments` (`id`, `name`) VALUES (2, 'For Girls');
+INSERT INTO `sh_departments` (`id`, `name`) VALUES (3, 'Stuffed Animals');
+
+INSERT INTO `sh_employees` (`id`, `name`, `salary`, `department_id`) VALUES (1, 'Bonnie Murphy', 8414, 2);
+INSERT INTO `sh_employees` (`id`, `name`, `salary`, `department_id`) VALUES (2, 'Rhiannon Donnelly DVM', 3645, 1);
+INSERT INTO `sh_employees` (`id`, `name`, `salary`, `department_id`) VALUES (3, 'Marcus Wehner', 4265, 3);
+INSERT INTO `sh_employees` (`id`, `name`, `salary`, `department_id`) VALUES (4, 'Hunter Grant', 6804, 3);
+
+INSERT INTO `sh_suppliers` (`id`, `name`) VALUES (1, 'Rippin, Kirlin and Yost');
+INSERT INTO `sh_suppliers` (`id`, `name`) VALUES (2, 'Wiegand, Jacobs and Wehner');
+INSERT INTO `sh_suppliers` (`id`, `name`) VALUES (3, 'Corwin-OReilly');
+INSERT INTO `sh_suppliers` (`id`, `name`) VALUES (4, 'Douglas, Walter and Toy');
+
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (1, 'Vulpix statue', 47, 107, 16, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (2, 'Nidoqueen statue', 70, 34, 1, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (3, 'Nidorina picture', 22, 28, 14, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (4, 'Seaking picture', 18, 27, 7, 3);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (5, 'Geodude plushie', 21, 0, 16, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (6, 'Mr. Mime statue', 39, 0, 6, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (7, 'Weezing picture', 51, 105, 13, 1);
+INSERT INTO `sh_items` (`id`, `name`, `price`, `amount`, `min_amount`, `department_id`) VALUES (8, 'Raichu statue', 83, 39, 9, 2);
+
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (1, '2016-12-15', 2, 3, 15);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (1, 4, 32);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (2, '2016-12-01', 3, 1, 30);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (2, 7, 49);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (3, '2016-04-15', 3, 4, 17);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (3, 7, 57);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (4, '2016-05-20', 2, 2, 6);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (4, 2, 40);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (5, '2016-12-19', 3, 1, 25);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (5, 1, 48);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (6, '2016-09-20', 3, 1, 28);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (6, 3, 39);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (7, '2016-09-01', 2, 4, 18);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (7, 8, 39);
+INSERT INTO `sh_orders` (`id`, `date`, `supplier_id`, `employee_id`, `supply_id`) VALUES (8, '2016-03-02', 4, 4, 7);
+INSERT INTO `sh_orders_items` (`order_id`, `item_id`, `amount`) VALUES (8, 1, 59);
+
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (6, '2016-11-19', 2);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (6, 2, 40, 60);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (7, '2016-05-06', 4);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (7, 1, 59, 76);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (15, '2016-10-06', 2);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (15, 4, 32, 27);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (17, '2016-09-27', 3);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (17, 7, 57, 31);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (18, '2016-08-09', 2);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (18, 8, 39, 95);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (25, '2016-10-04', 3);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (25, 1, 48, 73);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (28, '2016-12-06', 3);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (28, 3, 39, 27);
+INSERT INTO `sh_supplies` (`id`, `date`, `supplier_id`) VALUES (30, '2016-08-01', 3);
+INSERT INTO `sh_supplies_items` (`supply_id`, `item_id`, `amount`, `price`) VALUES (30, 7, 49, 51);
+
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (1, '2016-09-22', 1);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (1, 4, 1);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (2, '2016-07-12', 1);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (2, 3, 1);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (4, '2016-05-02', 3);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (4, 3, 2);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (6, '2017-01-28', 3);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (6, 3, 3);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (8, '2016-12-29', 4);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (8, 3, 3);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (9, '2017-02-10', 2);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (9, 7, 1);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (10, '2016-08-23', 1);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (10, 3, 2);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (12, '2016-05-02', 4);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (12, 2, 3);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (13, '2016-11-21', 4);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (13, 4, 3);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (14, '2016-07-02', 1);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (14, 2, 1);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (15, '2016-07-16', 4);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (15, 2, 1);
+INSERT INTO `sh_purchases` (`id`, `date`, `employee_id`) VALUES (16, '2016-08-24', 2);
+INSERT INTO `sh_purchases_items` (`purchase_id`, `item_id`, `amount`) VALUES (16, 4, 1);
+
