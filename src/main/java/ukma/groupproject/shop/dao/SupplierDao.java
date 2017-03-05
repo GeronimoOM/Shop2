@@ -4,5 +4,4 @@ import ukma.groupproject.shop.model.Supplier;
 
 public interface SupplierDao extends Dao<Supplier, Long> {
 
-
 }

@@ -2,11 +2,11 @@
 .idea
 .classpath
 .project
-Shop.iml
+Shop2.iml
 
 # build
 build
 target
 
 #properties
-src/main/resources/properties/*
+src/main/resources/properties/jdbc.properties

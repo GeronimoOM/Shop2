@@ -1,17 +1,15 @@
 package ukma.groupproject.shop.dao;
 
-import java.util.List;
+import java.io.Serializable;
 
-public interface Dao<E, K> {
+public interface Dao<E, K extends Serializable> {
 
-    E find(K key);
-
-    List<E> findAll();
+    E get(K key);
 
     void persist(E entity);
 
     void update(E entity);
 
-    void delete(K key);
+    void delete(E entity);
 
 }

@@ -4,6 +4,6 @@ import ukma.groupproject.shop.model.Supplier;
 
 public interface SupplierService {
 
-    Supplier find(Long supplierId);
+    Supplier get(Long id);
 
 }

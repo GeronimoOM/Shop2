@@ -10,7 +10,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ukma.groupproject.shop.model.Department;
+import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Supplier;
+import ukma.groupproject.shop.service.DepamentService;
+import ukma.groupproject.shop.service.EmployeeService;
 import ukma.groupproject.shop.service.SupplierService;
 
 @Component
@@ -34,6 +38,12 @@ public class MainWindowController extends Controller {
     @Autowired
     private SupplierService supplierService;
 
+    @Autowired
+    private DepamentService depamentService;
+
+    @Autowired
+    private EmployeeService employeeService;
+
     @Override
     public void initialize() {
         closeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -44,13 +54,16 @@ public class MainWindowController extends Controller {
         });
 
         supplierIdTextField.setFocusTraversable(false);
+
+        Department dep = depamentService.getWithEmployees(4L);
+        System.out.println(dep.getEmployees());
     }
 
     public void onFindSupplierButton() {
         Supplier supplier = null;
         try {
             Long supplierId = Long.parseLong(supplierIdTextField.getText());
-            supplier = supplierService.find(supplierId);
+            supplier = supplierService.get(supplierId);
 
             if(supplier != null) {
                 supplierNameTextField.setText(supplier.getName());

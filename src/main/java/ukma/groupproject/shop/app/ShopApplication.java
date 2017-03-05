@@ -12,19 +12,22 @@ import ukma.groupproject.shop.controller.Controller;
 
 public class ShopApplication extends SpringJavaFxApplication {
 
+    private ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+    private Stage mainStage;
+
     @Autowired
     private SpringFxmlLoader fxmlLoader;
 
-    protected ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage mainStage) {
+        this.mainStage = mainStage;
         Controller controller = fxmlLoader.load("/views/MainWindow.fxml");
         Scene scene = new Scene((Parent) controller.getView());
         scene.getStylesheets().add("css/style.css");
-        primaryStage.setTitle("Shop");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        mainStage.setTitle("Shop");
+        mainStage.setScene(scene);
+        mainStage.show();
     }
 
     @Override
@@ -34,5 +37,13 @@ public class ShopApplication extends SpringJavaFxApplication {
 
     public static void main(String[] args) {
         launch(ShopApplication.class, args);
+    }
+
+    public Stage getMainStage() {
+        return mainStage;
+    }
+
+    public void setMainStage(Stage mainStage) {
+        this.mainStage = mainStage;
     }
 }
