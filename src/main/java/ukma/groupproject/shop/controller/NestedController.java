@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.SupplierService;
 
-import javax.annotation.PostConstruct;
-
 @Component
 public class NestedController extends Controller{
 

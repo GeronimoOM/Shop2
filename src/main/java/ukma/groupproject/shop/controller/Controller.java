@@ -14,5 +14,5 @@ public abstract class Controller {
         this.view = view;
     }
 
-    public void initialize() {};
+    public void initialize() {}
 }

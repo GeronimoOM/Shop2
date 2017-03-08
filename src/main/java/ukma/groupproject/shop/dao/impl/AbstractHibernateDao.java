@@ -1,23 +1,20 @@
-package ukma.groupproject.shop.dao;
+package ukma.groupproject.shop.dao.impl;
 
 import java.io.Serializable;
 
-import java.lang.reflect.ParameterizedType;
- 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
- 
-public abstract class HibernateDao<E, K extends Serializable> implements Dao<E, K> {
+import ukma.groupproject.shop.dao.Dao;
+
+public abstract class AbstractHibernateDao<E, K extends Serializable> implements Dao<E, K> {
 
     protected final Class<E> entityClass;
 
     @Autowired
     protected SessionFactory sessionFactory;
 
-    public HibernateDao(Class<E> entityClass) {
+    public AbstractHibernateDao(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -43,10 +40,6 @@ public abstract class HibernateDao<E, K extends Serializable> implements Dao<E, 
     @Override
     public void delete(E entity) {
         getSession().delete(entity);
-    }
-
-    protected E getRef(K key) {
-        return getSession().getReference(entityClass, key);
     }
 
 }

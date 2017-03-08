@@ -10,13 +10,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ukma.groupproject.shop.model.Department;
-import ukma.groupproject.shop.model.Employee;
-import ukma.groupproject.shop.model.Supplier;
-import ukma.groupproject.shop.service.DepamentService;
-import ukma.groupproject.shop.service.EmployeeService;
-import ukma.groupproject.shop.service.SupplierService;
-
+import ukma.groupproject.shop.model.*;
+import ukma.groupproject.shop.service.*;
 @Component
 public class MainWindowController extends Controller {
 
@@ -38,12 +33,6 @@ public class MainWindowController extends Controller {
     @Autowired
     private SupplierService supplierService;
 
-    @Autowired
-    private DepamentService depamentService;
-
-    @Autowired
-    private EmployeeService employeeService;
-
     @Override
     public void initialize() {
         closeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -54,9 +43,6 @@ public class MainWindowController extends Controller {
         });
 
         supplierIdTextField.setFocusTraversable(false);
-
-        Department dep = depamentService.getWithEmployees(4L);
-        System.out.println(dep.getEmployees());
     }
 
     public void onFindSupplierButton() {
@@ -67,8 +53,7 @@ public class MainWindowController extends Controller {
 
             if(supplier != null) {
                 supplierNameTextField.setText(supplier.getName());
-            }
-            else {
+            } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, String.format("Supplier with id %d doesn't exist", supplierId));
                 alert.showAndWait();
             }

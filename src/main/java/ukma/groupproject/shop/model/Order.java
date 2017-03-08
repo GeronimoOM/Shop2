@@ -1,31 +1,33 @@
 package ukma.groupproject.shop.model;
 
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Order {
+@Entity
+@Table(name = "sh_orders")
+public class Order implements Serializable {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Date date;
 
+    @ManyToOne
     private Supplier supplier;
 
-    private Supply supply;
-
+    @ManyToOne
     private Employee employee;
 
-    private List<Item> items;
+    @OneToMany(mappedBy = "key.order", cascade = CascadeType.ALL)
+    private List<OrderItem> items = new ArrayList<>();
+
+    @ManyToOne
+    private Supply supply;
 
 	public Order() {}
-
-	public Order(Long id, Date date, Supplier supplier, Supply supply, Employee employee) {
-		this.id = id;
-		this.date = date;
-		this.supplier = supplier;
-		this.supply = supply;
-		this.employee = employee;
-	}
 
 	public Long getId() {
         return id;
@@ -51,6 +53,22 @@ public class Order {
         this.supplier = supplier;
     }
 
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
     public Supply getSupply() {
         return supply;
     }
@@ -59,12 +77,19 @@ public class Order {
         this.supply = supply;
     }
 
-    public Employee getEmployee() {
-        return employee;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Order order = (Order) o;
+
+        return id != null ? id.equals(order.id) : order.id == null;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
 }

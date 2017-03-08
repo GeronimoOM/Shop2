@@ -1,33 +1,36 @@
 package ukma.groupproject.shop.model;
 
-import ukma.groupproject.shop.model.persistence.OrderItemPK;
+import ukma.groupproject.shop.model.persistence.PurchaseItemPK;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "sh_orders_items")
-public class OrderItem implements Serializable {
+@Table(name = "sh_purchases_items")
+public class PurchaseItem implements Serializable {
 
     @EmbeddedId
-    private OrderItemPK key = new OrderItemPK();
+    private PurchaseItemPK key = new PurchaseItemPK();
 
     private int amount;
 
-    public OrderItem() {}
+    public PurchaseItem() {
+    }
 
-    public OrderItem(Order order, Item item, int amount) {
-        key.setOrder(order);
+    public PurchaseItem(Purchase purchase, Item item, int amount) {
         key.setItem(item);
+        key.setPurchase(purchase);
         this.amount = amount;
     }
 
-    public Order getOrder() {
-        return key.getOrder();
+    public Purchase getPurchase() {
+        return key.getPurchase();
     }
 
-    public void setOrder(Order order) {
-        key.setOrder(order);
+    public void setPurchase(Purchase purchase) {
+        key.setPurchase(purchase);
     }
 
     public Item getItem() {
@@ -51,9 +54,9 @@ public class OrderItem implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OrderItem orderItem = (OrderItem) o;
+        PurchaseItem that = (PurchaseItem) o;
 
-        return key != null ? key.equals(orderItem.key) : orderItem.key == null;
+        return key != null ? key.equals(that.key) : that.key == null;
 
     }
 

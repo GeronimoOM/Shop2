@@ -1,25 +1,29 @@
 package ukma.groupproject.shop.model;
 
-import java.sql.Timestamp;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "sh_supplies")
 public class Supply {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Timestamp date;
+    private Date date;
 
+    @ManyToOne
     private Supplier supplier;
 
+    @OneToMany
+    private List<Order> orders = new ArrayList<>();
 
+    @OneToMany(mappedBy = "key.supply", cascade = CascadeType.ALL)
+    private List<SupplyItem> items = new ArrayList<>();
 
     public Supply() {}
-
-    public Supply(Long id, Timestamp date, Supplier supplier) {
-        this.id = id;
-        this.date = date;
-        this.supplier = supplier;
-    }
 
     public Long getId() {
         return id;
@@ -29,11 +33,11 @@ public class Supply {
         this.id = id;
     }
 
-    public Timestamp getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -45,12 +49,19 @@ public class Supply {
         this.supplier = supplier;
     }
 
-    @Override
-    public String toString() {
-        return "Supply{" +
-                "id=" + id +
-                ", date=" + date +
-                ", supplier=" + supplier +
-                '}';
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public List<SupplyItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<SupplyItem> items) {
+        this.items = items;
     }
 }

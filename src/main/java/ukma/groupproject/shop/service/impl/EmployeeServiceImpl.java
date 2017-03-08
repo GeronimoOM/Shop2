@@ -18,4 +18,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee get(Long id) {
         return employeeDao.get(id);
     }
+
+    @Override
+    public void persist(Employee employee) {
+        employeeDao.persist(employee);
+    }
+
+    @Override
+    public void update(Employee employee) {
+        employeeDao.update(employee);
+    }
+
+    @Override
+    public void delete(Employee employee) {
+        employeeDao.delete(employee);
+    }
 }

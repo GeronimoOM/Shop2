@@ -1,28 +1,36 @@
 package ukma.groupproject.shop.model;
 
-public class Item {
+import javax.persistence.*;
+import java.io.Serializable;
 
+@Entity
+@Table(name = "sh_items")
+public class Item implements Serializable {
+
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private Long price;
+    private float price;
 
-    private Long amount;
+    private int amount;
 
-    private Long minAmount;
+	@Column(name = "min_amount")
+    private int minAmount;
 
+	@ManyToOne
     private Department department;
 
 	public Item() {}
 
-    public Item(String name, Long price, Long amount, Long minAmount, Department department) {
+	public Item(String name, float price, int amount, int minAmount, Department department) {
 		this.name = name;
 		this.price = price;
 		this.amount = amount;
 		this.minAmount = minAmount;
 		this.department = department;
-    }
+	}
 
 	public Long getId() {
 		return id;
@@ -40,27 +48,27 @@ public class Item {
 		this.name = name;
 	}
 
-	public Long getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(Long price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 
-	public Long getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Long amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
 	}
 
-	public Long getMinAmount() {
+	public int getMinAmount() {
 		return minAmount;
 	}
 
-	public void setMinAmount(Long minAmount) {
+	public void setMinAmount(int minAmount) {
 		this.minAmount = minAmount;
 	}
 
@@ -72,4 +80,19 @@ public class Item {
 		this.department = department;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Item item = (Item) o;
+
+		return id != null ? id.equals(item.id) : item.id == null;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id != null ? id.hashCode() : 0;
+	}
 }

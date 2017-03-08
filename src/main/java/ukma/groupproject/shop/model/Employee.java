@@ -1,12 +1,15 @@
 package ukma.groupproject.shop.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sh_employees")
-public class Employee {
+public class Employee implements Serializable {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -15,6 +18,17 @@ public class Employee {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
+
+    @OneToMany(mappedBy = "employee")
+    private List<Order> orders = new ArrayList<>();
+
+    public Employee() {}
+
+    public Employee(String name, int salary, Department department) {
+        this.name = name;
+        this.salary = salary;
+        this.department = department;
+    }
 
     public Long getId() {
         return id;
@@ -48,13 +62,27 @@ public class Employee {
         this.department = department;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Employee{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", salary=").append(salary);
-        sb.append('}');
-        return sb.toString();
+    public List<Order> getOrders() {
+        return orders;
     }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Employee employee = (Employee) o;
+
+        return id != null ? id.equals(employee.id) : employee.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
 }

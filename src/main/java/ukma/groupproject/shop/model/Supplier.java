@@ -1,15 +1,28 @@
 package ukma.groupproject.shop.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sh_suppliers")
-public class Supplier {
+public class Supplier implements Serializable {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    @OneToMany(mappedBy = "supplier")
+    private List<Order> ordersTo = new ArrayList<>();
+
+    @OneToMany(mappedBy = "supplier")
+    private List<Supply> suppliesBy = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "sh_suppliers_items")
+    private List<Item> items = new ArrayList<>();
 
     public Supplier() {}
 
@@ -29,12 +42,34 @@ public class Supplier {
         this.name = name;
     }
 
+    public List<Order> getOrdersTo() {
+        return ordersTo;
+    }
+
+    public void setOrdersTo(List<Order> ordersTo) {
+        this.ordersTo = ordersTo;
+    }
+
+    public List<Supply> getSuppliesBy() {
+        return suppliesBy;
+    }
+
+    public void setSuppliesBy(List<Supply> suppliesBy) {
+        this.suppliesBy = suppliesBy;
+    }
+
     @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Supplier{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append('}');
-        return sb.toString();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Supplier supplier = (Supplier) o;
+
+        return id != null ? id.equals(supplier.id) : supplier.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
