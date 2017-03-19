@@ -8,10 +8,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -35,18 +37,18 @@ public class ItemsTabController extends Controller {
     @FXML private TableColumn<Item, String> nameColumn;
     @FXML private TableColumn<Item, Integer> amountColumn;
     @FXML private TableColumn<Item, Integer> minAmountColumn;
-    @FXML private TableColumn<Item, String> departmentColumn;
+    @FXML private TableColumn<Item, Department> departmentColumn;
 
     @Autowired private ItemService itemService;
     @Autowired private DepartmentService departmentService;
 
-    private BooleanProperty isSingleDepartmentMode;
     private ObservableList<Item> items;
     private ObservableList<Department> departments;
 
-    private Service<List<Item>> getAllItemsService;
-    private Service<List<Item>> getItemsByDepartmentService;
-    private EventHandler<WorkerStateEvent> onGetItemsSucceeded;
+    private BooleanProperty isItemsTableReloading;
+    private BooleanProperty isSingleDepartmentMode;
+
+    private Service<List<Item>> getItemsService;
 
     private static final int DEPARTMENT_COLUMN_HIDE_ANIMATION_DURATION_MILLIS = 200;
     private Timeline departmentColumnHideAnimation;
@@ -54,21 +56,34 @@ public class ItemsTabController extends Controller {
 
     @Override
     public void initialize() {
+        items = FXCollections.observableList(itemService.getAll());
+        departments = FXCollections.observableList(departmentService.getAll());
+        departments.add(0, null);
+
         nameColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("name"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("amount"));
         minAmountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("minAmount"));
-        departmentColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+        departmentColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, Department>, ObservableValue<Department>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> param) {
-                return new ReadOnlyObjectWrapper<>(param.getValue().getDepartment().getName());
+            public ObservableValue<Department> call(TableColumn.CellDataFeatures<Item, Department> param) {
+                return new ReadOnlyObjectWrapper<>(param.getValue().getDepartment());
+            }
+        });
+        departmentColumn.setCellFactory(new Callback<TableColumn<Item, Department>, TableCell<Item, Department>>() {
+            @Override
+            public TableCell<Item, Department> call(TableColumn<Item, Department> param) {
+                return new TableCell<Item, Department>() {
+                    @Override
+                    protected void updateItem(Department department, boolean empty) {
+                        super.updateItem(department, empty);
+                        if(!empty) {
+                            setText(department.getName());
+                        }
+                    }
+                };
             }
         });
 
-        items = FXCollections.observableList(itemService.getAll());
-        itemsTable.setItems(items);
-
-        departments = FXCollections.observableList(departmentService.getAll());
-        departments.add(0, null);
         departmentChoiceBox.setConverter(new StringConverter<Department>() {
             @Override
             public String toString(Department department) {
@@ -81,11 +96,17 @@ public class ItemsTabController extends Controller {
             }
         });
 
+        isItemsTableReloading = new SimpleBooleanProperty(false);
+        itemsTable.disableProperty().bind(isItemsTableReloading);
+        departmentChoiceBox.disableProperty().bind(isItemsTableReloading);
+
         isSingleDepartmentMode = new SimpleBooleanProperty(false);
+        isSingleDepartmentMode.bind(departmentChoiceBox.getSelectionModel().selectedItemProperty().isNotNull());
         departmentChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Department>() {
             @Override
             public void changed(ObservableValue<? extends Department> observable, Department oldValue, final Department newValue) {
-                onDepartmentSelectionChanged(newValue);
+                getItemsService.reset();
+                getItemsService.start();
             }
         });
         departmentChoiceBox.setItems(departments);
@@ -93,58 +114,43 @@ public class ItemsTabController extends Controller {
 
         initializeServices();
         initializeAnimations();
+
+        itemsTable.setItems(items);
+
     }
 
     private void initializeServices() {
-        onGetItemsSucceeded = new EventHandler<WorkerStateEvent>() {
+        getItemsService = new Service<List<Item>>() {
+            @Override
+            protected Task<List<Item>> createTask() {
+                Task<List<Item>> getItemsTask = new Task<List<Item>>() {
+                    @Override
+                    protected List<Item> call() throws Exception {
+                        return departmentChoiceBox.getValue() == null ? itemService.getAll():
+                                itemService.getByDepartment(departmentChoiceBox.getValue());
+                    }
+                };
+                return getItemsTask;
+            }
+        };
+        getItemsService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
-                items.setAll((List<Item>) event.getSource().getValue());
-                departmentChoiceBox.setDisable(false);
+                items.setAll(getItemsService.getValue());
             }
-        };
-
-        getAllItemsService = new Service<List<Item>>() {
+        });
+        getItemsService.stateProperty().addListener(new ChangeListener<Worker.State>() {
             @Override
-            protected Task<List<Item>> createTask() {
-                Task<List<Item>> getAllItemsTask = new Task<List<Item>>() {
-                    @Override
-                    protected List<Item> call() throws Exception {
-                        return itemService.getAll();
-                    }
-                };
-                getAllItemsTask.setOnSucceeded(onGetItemsSucceeded);
-                return getAllItemsTask;
+            public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldState, Worker.State newState) {
+                switch (newState) {
+                    case SCHEDULED:
+                        isItemsTableReloading.setValue(Boolean.TRUE);
+                        break;
+                    case CANCELLED: case FAILED: case SUCCEEDED:
+                        isItemsTableReloading.setValue(Boolean.FALSE);
+                }
             }
-        };
-
-        getItemsByDepartmentService = new Service<List<Item>>() {
-            @Override
-            protected Task<List<Item>> createTask() {
-                Task<List<Item>> getItemsByDepartmentTask = new Task<List<Item>>() {
-                    @Override
-                    protected List<Item> call() throws Exception {
-                        return itemService.getByDepartment(departmentChoiceBox.getValue());
-                    }
-                };
-                getItemsByDepartmentTask.setOnSucceeded(onGetItemsSucceeded);
-                return getItemsByDepartmentTask;
-            }
-        };
-    }
-
-    private void onDepartmentSelectionChanged(final Department department) {
-        if(department == null) {
-            departmentChoiceBox.setDisable(true);
-            getAllItemsService.reset();
-            getAllItemsService.start();
-            isSingleDepartmentMode.setValue(Boolean.FALSE);
-        } else {
-            departmentChoiceBox.setDisable(true);
-            getItemsByDepartmentService.reset();
-            getItemsByDepartmentService.start();
-            isSingleDepartmentMode.setValue(Boolean.TRUE);
-        }
+        });
     }
 
     private void initializeAnimations() {

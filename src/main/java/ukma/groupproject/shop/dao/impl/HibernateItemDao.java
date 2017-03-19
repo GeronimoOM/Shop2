@@ -13,7 +13,7 @@ import java.util.List;
 public class HibernateItemDao extends AbstractHibernateDao<Item, Long> implements ItemDao {
 
     private static final String HQL_SELECT_ALL_ITEMS = "select i from Item i join fetch i.department order by i.name";
-    private static final String HQL_SELECT_ITEMS_BY_DEPARTMENT = "select i from Item i where i.department=:department";
+    private static final String HQL_SELECT_ITEMS_BY_DEPARTMENT = "select i from Item i  join fetch i.department where i.department=:department";
     private static final String HQL_SELECT_ITEMS_SUPPLIED_BY = "select s.items from Supplier s where s.id=:supplier_id";
 
     public HibernateItemDao() {
