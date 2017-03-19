@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.ItemDao;
+import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.ItemService;
@@ -35,6 +36,16 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public void delete(Item item) {
         itemDao.delete(item);
+    }
+
+    @Override
+    public List<Item> getAll() {
+        return itemDao.getAll();
+    }
+
+    @Override
+    public List<Item> getByDepartment(Department department) {
+        return itemDao.getByDepartment(department);
     }
 
     @Override

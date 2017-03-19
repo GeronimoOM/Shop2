@@ -1,5 +1,4 @@
 .root{
-    -fx-font-size: 14pt;
-    -fx-font-family: "Comic Sans MS";
-    //-fx-base: rgb(244, 65, 217);
+    -fx-font-size: 12pt;
+    -fx-base: rgb(121, 143, 178);
 }

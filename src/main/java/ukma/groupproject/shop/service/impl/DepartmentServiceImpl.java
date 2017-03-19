@@ -7,6 +7,8 @@ import ukma.groupproject.shop.dao.DepartmentDao;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.service.DepartmentService;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class DepartmentServiceImpl implements DepartmentService {
@@ -32,6 +34,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void delete(Department department) {
         departmentDao.delete(department);
+    }
+
+    @Override
+    public List<Department> getAll() {
+        return departmentDao.getAll();
     }
 
     @Override

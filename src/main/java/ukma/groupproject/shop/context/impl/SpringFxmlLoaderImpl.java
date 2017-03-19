@@ -30,7 +30,9 @@ public class SpringFxmlLoaderImpl implements SpringFxmlLoader {
             });
             Node view = loader.load();
             Controller controller = loader.getController();
-            controller.setView(view);
+            if(controller != null) {
+                controller.setView(view);
+            }
             return controller;
         } catch (IllegalStateException | IOException e) {
             throw new RuntimeException("Failed to load FXML: " + path, e);
