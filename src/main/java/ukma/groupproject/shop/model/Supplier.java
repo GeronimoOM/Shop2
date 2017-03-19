@@ -21,7 +21,9 @@ public class Supplier implements Serializable {
     private List<Supply> suppliesBy = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "sh_suppliers_items")
+    @JoinTable(name = "sh_suppliers_items",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id"))
     private List<Item> items = new ArrayList<>();
 
     public Supplier() {}
@@ -58,6 +60,19 @@ public class Supplier implements Serializable {
         this.suppliesBy = suppliesBy;
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,10 +81,5 @@ public class Supplier implements Serializable {
         Supplier supplier = (Supplier) o;
 
         return id != null ? id.equals(supplier.id) : supplier.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

@@ -17,7 +17,7 @@ public class Supply {
     @ManyToOne
     private Supplier supplier;
 
-    @OneToMany
+    @OneToMany(mappedBy = "supply")
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "key.supply", cascade = CascadeType.ALL)

@@ -2,6 +2,8 @@ package ukma.groupproject.shop.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sh_items")
@@ -21,6 +23,9 @@ public class Item implements Serializable {
 
 	@ManyToOne
     private Department department;
+
+	@ManyToMany(mappedBy = "items")
+	private List<Supplier> suppliedBy = new ArrayList<>();
 
 	public Item() {}
 

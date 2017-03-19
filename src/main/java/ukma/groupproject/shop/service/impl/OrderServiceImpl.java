@@ -7,6 +7,7 @@ import ukma.groupproject.shop.dao.OrderDao;
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Order;
 import ukma.groupproject.shop.service.OrderService;
+import ukma.groupproject.shop.service.SupplierService;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void delete(Order order) {
+        //TODO Unless fulfilled
         orderDao.delete(order);
     }
 

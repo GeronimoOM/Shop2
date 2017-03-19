@@ -16,13 +16,15 @@ public class Order implements Serializable {
     private Date date;
 
     @ManyToOne
+    private Item item;
+
+    private int amount;
+
+    @ManyToOne
     private Supplier supplier;
 
     @ManyToOne
     private Employee employee;
-
-    @OneToMany(mappedBy = "key.order", cascade = CascadeType.ALL)
-    private List<OrderItem> items = new ArrayList<>();
 
     @ManyToOne
     private Supply supply;
@@ -45,6 +47,22 @@ public class Order implements Serializable {
         this.date = date;
     }
 
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
     public Supplier getSupplier() {
         return supplier;
     }
@@ -59,14 +77,6 @@ public class Order implements Serializable {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
     }
 
     public Supply getSupply() {

@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.ItemDao;
 import ukma.groupproject.shop.model.Item;
+import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.ItemService;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -32,5 +35,10 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public void delete(Item item) {
         itemDao.delete(item);
+    }
+
+    @Override
+    public List<Item> getSuppliedBy(Supplier supplier) {
+        return itemDao.getSuppliedBy(supplier);
     }
 }

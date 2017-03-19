@@ -2,9 +2,12 @@ package ukma.groupproject.shop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.SupplierDao;
+import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Supplier;
+import ukma.groupproject.shop.service.ItemService;
 import ukma.groupproject.shop.service.SupplierService;
 
 @Service
@@ -14,9 +17,18 @@ public class SupplierServiceImpl implements SupplierService {
     @Autowired
     private SupplierDao supplierDao;
 
+    @Autowired
+    private ItemService itemService;
+
     @Override
     public Supplier get(Long id) {
         return supplierDao.get(id);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean supplies(Supplier supplier, Item item) {
+        return itemService.getSuppliedBy(supplier).contains(item);
     }
 
 }

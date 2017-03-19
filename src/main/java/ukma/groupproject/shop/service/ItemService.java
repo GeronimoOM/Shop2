@@ -1,6 +1,9 @@
 package ukma.groupproject.shop.service;
 
 import ukma.groupproject.shop.model.Item;
+import ukma.groupproject.shop.model.Supplier;
+
+import java.util.List;
 
 public interface ItemService {
 
@@ -11,5 +14,7 @@ public interface ItemService {
     void update(Item item);
 
     void delete(Item item);
+
+    List<Item> getSuppliedBy(Supplier supplier);
 
 }

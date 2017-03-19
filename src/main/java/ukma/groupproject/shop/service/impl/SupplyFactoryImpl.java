@@ -18,7 +18,6 @@ public class SupplyFactoryImpl implements SupplyFactory {
         if(orders.isEmpty()) {
             throw new ShopBusinessException("Supply must complete at least 1 Order");
         }
-
         Supply supply = new Supply();
         supply.setDate(new Date());
         supply.setSupplier(orders.get(0).getSupplier());
@@ -28,16 +27,14 @@ public class SupplyFactoryImpl implements SupplyFactory {
             if(!supply.getSupplier().equals(order.getSupplier())) {
                 throw new ShopBusinessException("Supply by Supplier can only complete orders created specifically for him");
             }
-
-            for(OrderItem orderItem: order.getItems()) {
-                Integer amount = itemAmounts.get(orderItem.getItem());
-                if(amount == null) {
-                    amount = 0;
-                }
-                amount += orderItem.getAmount();
-                itemAmounts.put(orderItem.getItem(), amount);
+            Integer amount = itemAmounts.get(order.getItem());
+            if(amount == null) {
+                amount = 0;
             }
+            amount += order.getAmount();
+            itemAmounts.put(order.getItem(), amount);
         }
+
         for(Map.Entry<Item, Integer> entry: itemAmounts.entrySet()) {
             Float price = prices.get(entry.getKey());
             if(price == null) {
