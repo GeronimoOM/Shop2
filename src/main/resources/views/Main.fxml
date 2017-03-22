@@ -9,20 +9,7 @@
   <center>
     <BorderPane prefHeight="200.0" prefWidth="200.0">
       <center>
-        <TabPane id="mainTabPane" prefHeight="516.0" prefWidth="708.0" tabClosingPolicy="UNAVAILABLE">
-          <tabs>
-            <Tab disable="true" text="Items">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-              </content>
-            </Tab>
-            <Tab disable="true" text="Departments">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-              </content>
-            </Tab>
-          </tabs>
-        </TabPane>
+        <TabPane fx:id="mainTabPane" disable="false" prefHeight="516.0" prefWidth="708.0" side="BOTTOM" tabClosingPolicy="ALL_TABS" />
       </center>
       <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="41.0" prefWidth="780.0" spacing="24.0">
@@ -42,13 +29,13 @@
       <menus>
         <Menu id="dataMenu" text="Data">
           <items>
-            <MenuItem id="departmentsMenuItem" text="Departments" />
-            <MenuItem id="itemsMenuItem" text="Items" fx:id="closeMenuItem" />
-            <MenuItem id="ordersMenuItem" text="Orders" />
-            <MenuItem id="suppliersMenuItem" text="Suppliers" />
-            <MenuItem id="suppliesMenuItem" text="Supplies" />
-            <MenuItem id="employeesMenuItem" text="Employees" />
-            <MenuItem id="purchasesMenuItem" text="Purchases" />
+            <MenuItem id="departmentsMenuItem" text="Departments" fx:id="departmentsMenuItem" />
+            <MenuItem id="itemsMenuItem" text="Items" fx:id="itemsMenuItem" />
+            <MenuItem id="ordersMenuItem" text="Orders" fx:id="ordersMenuItem" />
+            <MenuItem id="suppliersMenuItem" text="Suppliers" fx:id="suppliersMenuItem" />
+            <MenuItem id="suppliesMenuItem" text="Supplies" fx:id="suppliesMenuItem" />
+            <MenuItem id="employeesMenuItem" text="Employees" fx:id="employeesMenuItem" />
+            <MenuItem id="purchasesMenuItem" text="Purchases" fx:id="purchasesMenuItem" />
           </items>
         </Menu>
         <Menu id="analyseMenu" mnemonicParsing="false" text="Statistics">
@@ -61,7 +48,7 @@
         </Menu>
         <Menu id="analyseMenu" mnemonicParsing="false" text="System">
           <items>
-            <MenuItem id="resultsMenuItem" mnemonicParsing="false" text="Exit" />
+            <MenuItem id="exitMenuItem" mnemonicParsing="false" text="Exit" fx:id="exitMenuItem" />
           </items>
         </Menu>
       </menus>

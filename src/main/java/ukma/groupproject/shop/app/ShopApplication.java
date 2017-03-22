@@ -22,12 +22,11 @@ public class ShopApplication extends SpringJavaFxApplication {
     @Override
     public void start(Stage mainStage) {
         this.mainStage = mainStage;
-        Controller controller = fxmlLoader.load("/views/mainWindow.fxml");
+        Controller controller = fxmlLoader.load("/views/Main.fxml");
         Scene scene = new Scene((Parent) controller.getView());
         scene.getStylesheets().add("css/style.css");
         mainStage.setTitle("Shop");
         mainStage.setScene(scene);
-        mainStage.setResizable(false);
         mainStage.show();
     }
 

@@ -1,46 +1,76 @@
 package ukma.groupproject.shop.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
-import org.hibernate.mapping.Array;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ukma.groupproject.shop.model.*;
-import ukma.groupproject.shop.service.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.plaf.TabbedPaneUI;
-import javax.swing.plaf.basic.BasicTabbedPaneUI.TabbedPaneLayout;
+import javafx.scene.control.TabPane;
+import ukma.groupproject.shop.context.SpringFxmlLoader;
 
 @Component
-public class MainWindowController extends Controller {
-
-    @FXML private TabbedPaneUI mainTabPane;
-    
+public class MainWindowController extends Controller 
+{
+    @FXML private MenuItem departmentsMenuItem;
     @FXML private MenuItem itemsMenuItem;
+    @FXML private MenuItem ordersMenuItem;
+    @FXML private MenuItem suppliersMenuItem;
+    @FXML private MenuItem suppliesMenuItem;
+    @FXML private MenuItem employeesMenuItem;
+    @FXML private MenuItem purchasesMenuItem;
+
+    @FXML private MenuItem exitMenuItem;
     
-    @FXML private Tab itemsTab;
+    @FXML private TabPane mainTabPane;
+
+    @Autowired
+    private SpringFxmlLoader fxmlLoader;
     
+    private ItemsTabController itemsTabController;
+    private SuppliersTabController suppliersTabController;
 
     @Override
-    public void initialize() {
+    public void initialize() 
+    {
+        itemsTabController = (ItemsTabController) fxmlLoader.load("/views/ItemsTab.fxml");
+        suppliersTabController = (SuppliersTabController) fxmlLoader.load("/views/SuppliersTab.fxml");
+    	
     	itemsMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                itemsTab.setDisable(false);
+            public void handle(ActionEvent event) { addTab("Items", itemsTabController.getView()); }
+        });
+    	
+    	suppliersMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) { addTab("Suppliers", suppliersTabController.getView()); }
+        });
+    	
+    	exitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) 
+            { 
+            	Platform.exit();
             }
         });
     }
     
-    
+    private void addTab(String name, Node content)
+    {
+    	for (Tab tab : mainTabPane.getTabs())
+    		if (tab.getContent().equals(content))
+    		{
+    	    	mainTabPane.getSelectionModel().select(tab);
+    	    	return;
+    		}
+    	
+    	Tab tab = new Tab(name);
+    	tab.setContent(content);
+    	mainTabPane.getTabs().add(tab);
+    	mainTabPane.getSelectionModel().select(tab);
+    }
 }
