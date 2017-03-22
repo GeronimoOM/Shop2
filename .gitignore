@@ -2,6 +2,7 @@
 .idea
 .classpath
 .project
+.settings
 Shop2.iml
 
 # build
