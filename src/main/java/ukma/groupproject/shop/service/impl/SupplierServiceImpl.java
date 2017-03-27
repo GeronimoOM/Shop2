@@ -28,6 +28,11 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    public Supplier getByName(String name) {
+        return supplierDao.getByName(name);
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean supplies(Supplier supplier, Item item) {
         return itemService.getSuppliedBy(supplier).contains(item);
