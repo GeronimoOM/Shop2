@@ -54,35 +54,34 @@ public class SuppliersTabController extends Controller {
     @Override
     public void initialize() 
     {
-        createButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	getView().setDisable(true);
-                createSupplierController = (CreateSupplierController) fxmlLoader.load("/views/CreateSupplier.fxml");
-            	createSupplierScene = new Scene((Parent) createSupplierController.getView());
-            	createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+        createButton.setOnAction(e -> {
+            getView().setDisable(true);
+            createSupplierController = (CreateSupplierController) fxmlLoader.load("/views/CreateSupplier.fxml");
+            createSupplierScene = new Scene((Parent) createSupplierController.getView());
+            createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 
-            	Stage createSupplierStage = new Stage();
-            	createSupplierStage.setTitle("Create New Supplier");
-            	createSupplierStage.setScene(createSupplierScene);
-            	createSupplierStage.initModality(Modality.APPLICATION_MODAL); 
-            	createSupplierStage.initOwner(getView().getScene().getWindow());
-            	createSupplierStage.showAndWait();
-        		refreshSupplierService();
-            	getView().setDisable(false);
+            Stage createSupplierStage = new Stage();
+            createSupplierStage.setTitle("Create New Supplier");
+            createSupplierStage.setScene(createSupplierScene);
+            createSupplierStage.initModality(Modality.APPLICATION_MODAL);
+            createSupplierStage.initOwner(getView().getScene().getWindow());
+            createSupplierStage.showAndWait();
+
+            if(createSupplierController.getSupplier() != null) {
+                suppliers.add(createSupplierController.getSupplier());
             }
+            getView().setDisable(false);
         });
         
-        removeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	Supplier s = suppliersTable.getSelectionModel().getSelectedItem();
-            	Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete supplier " + s.getName() + "?", ButtonType.YES, ButtonType.NO);
-            	alert.initModality(Modality.APPLICATION_MODAL);
-            	alert.showAndWait();
-            	if (alert.getResult() == ButtonType.YES)
-            	{
-            		supplierService.delete(s);
-            		refreshSupplierService();
-            	}
+        removeButton.setOnAction(e -> {
+            Supplier s = suppliersTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete supplier " + s.getName() + "?", ButtonType.YES, ButtonType.NO);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.YES)
+            {
+                supplierService.delete(s);
+                refreshSupplierService();
             }
         });
 

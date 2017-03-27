@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 import ukma.groupproject.shop.dao.SupplierDao;
+import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Supplier;
 
 @Repository
 public class HibernateSupplierDao extends AbstractHibernateDao<Supplier, Long> implements SupplierDao {
 
     private static final String HQL_SELECT_ALL_SUPPLIERS = "select s from Supplier s";
+    private static final String HQL_SELECT_SUPPLIER_BY_NAME = "select s from Supplier s where s.name=:name";
 
     public HibernateSupplierDao() {
         super(Supplier.class);
@@ -20,13 +22,8 @@ public class HibernateSupplierDao extends AbstractHibernateDao<Supplier, Long> i
         return getSession().createQuery(HQL_SELECT_ALL_SUPPLIERS).list();
     }
 
-	@Override
-	public void persist(Supplier s) {
-		getSession().persist(s);
-	}
-
-	@Override
-	public void delete(Supplier s) {
-		getSession().delete(s);
-	}
+    @Override
+    public Supplier getByName(String name) {
+        return (Supplier) getSession().createQuery(HQL_SELECT_SUPPLIER_BY_NAME).setParameter("name", name).uniqueResult();
+    }
 }
