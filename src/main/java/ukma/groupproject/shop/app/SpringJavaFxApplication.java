@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationContext;
 
 public abstract class SpringJavaFxApplication extends Application {
 
+    public static final String STYLESHEETS = "css/style.css";
+
     protected abstract ApplicationContext getApplicationContext();
 
     @Override

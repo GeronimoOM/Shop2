@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane id="BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<BorderPane id="BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ukma.groupproject.shop.controller.CreateSupplierController">
   <bottom>
     <BorderPane prefHeight="41.0" prefWidth="600.0">
       <center>
-        <Button mnemonicParsing="false" text="Create Supplier" />
+        <Button fx:id="createButton" mnemonicParsing="false" text="Create Supplier" />
       </center>
     </BorderPane>
   </bottom>
@@ -20,17 +20,17 @@
       <children>
         <HBox alignment="CENTER" prefHeight="41.0" prefWidth="580.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
           <children>
-            <TextField prefWidth="200.0" promptText="Name" />
+            <TextField fx:id="nameTextField" prefWidth="200.0" promptText="Name" />
           </children>
         </HBox>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
           <center>
-            <ListView prefHeight="200.0" prefWidth="200.0" />
+            <ListView fx:id="addedItemsList" prefHeight="-1.0" prefWidth="-1.0" />
           </center>
           <right>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
               <children>
-                <Button mnemonicParsing="false" text="Remove" />
+                <Button fx:id="removeButton" mnemonicParsing="false" text="Remove" />
               </children>
             </VBox>
           </right>
@@ -38,14 +38,14 @@
             <Label text="Added Items" />
           </top>
         </BorderPane>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <BorderPane prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
           <center>
-            <ListView prefHeight="200.0" prefWidth="200.0" />
+            <ListView fx:id="allItemsList" prefHeight="-1.0" prefWidth="-1.0" />
           </center>
           <right>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
               <children>
-                <Button mnemonicParsing="false" prefWidth="63.0" text="Add" />
+                <Button fx:id="addButton" mnemonicParsing="false" prefWidth="63.0" text="Add" />
               </children>
             </VBox>
           </right>

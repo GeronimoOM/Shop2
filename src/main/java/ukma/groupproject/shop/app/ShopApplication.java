@@ -24,7 +24,7 @@ public class ShopApplication extends SpringJavaFxApplication {
         this.mainStage = mainStage;
         Controller controller = fxmlLoader.load("/views/Main.fxml");
         Scene scene = new Scene((Parent) controller.getView());
-        scene.getStylesheets().add("css/style.css");
+        scene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
         mainStage.setTitle("Shop");
         mainStage.setScene(scene);
         mainStage.show();

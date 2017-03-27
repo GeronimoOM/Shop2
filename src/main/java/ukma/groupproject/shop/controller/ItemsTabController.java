@@ -116,7 +116,6 @@ public class ItemsTabController extends Controller {
         initializeAnimations();
 
         itemsTable.setItems(items);
-
     }
 
     private void initializeServices() {

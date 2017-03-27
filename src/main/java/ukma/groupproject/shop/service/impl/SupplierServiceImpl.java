@@ -1,5 +1,7 @@
 package ukma.groupproject.shop.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,4 +33,8 @@ public class SupplierServiceImpl implements SupplierService {
         return itemService.getSuppliedBy(supplier).contains(item);
     }
 
+	@Override
+	public List<Supplier> getAll() {
+        return supplierDao.getAll();
+	}
 }
