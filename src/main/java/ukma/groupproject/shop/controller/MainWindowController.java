@@ -40,23 +40,19 @@ public class MainWindowController extends Controller
     @Override
     public void initialize() 
     {
-        itemsTabController = (ItemsTabController) fxmlLoader.load("/views/ItemsTab.fxml");
-        suppliersTabController = (SuppliersTabController) fxmlLoader.load("/views/SuppliersTab.fxml");
-        departmentsTabController = (DepartmentsTabController) fxmlLoader.load("/views/DepartmentsTab.fxml");
-        employeesTabController = (EmployeesTabController) fxmlLoader.load("/views/EmployeesTab.fxml");
-        purchasesTabController = (PurchasesTabController) fxmlLoader.load("/views/PurchasesTab.fxml");
-    	
     	itemsMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) { addTab("Items", itemsTabController.getView()); }
+            public void handle(ActionEvent event) 
+            { 
+            	addTab("Items", itemsTabController, "/views/ItemsTab.fxml"); 
+            }
         });
     	
     	suppliersMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) 
             { 
-            	addTab("Suppliers", suppliersTabController.getView()); 
-            	suppliersTabController.refreshSupplierService();
+            	addTab("Suppliers", suppliersTabController, "/views/SuppliersTab.fxml"); 
             }
         });
     	
@@ -64,8 +60,7 @@ public class MainWindowController extends Controller
             @Override
             public void handle(ActionEvent event) 
             { 
-            	addTab("Departments", departmentsTabController.getView()); 
-            	departmentsTabController.refreshDepartmentService();
+            	addTab("Departments", departmentsTabController, "/views/DepartmentsTab.fxml"); 
             }
         });
     	
@@ -73,8 +68,7 @@ public class MainWindowController extends Controller
             @Override
             public void handle(ActionEvent event) 
             { 
-            	addTab("Employees", employeesTabController.getView()); 
-            	employeesTabController.refreshEmployeeService();
+            	addTab("Employees", employeesTabController, "/views/EmployeesTab.fxml"); 
             }
         });
     	
@@ -82,8 +76,7 @@ public class MainWindowController extends Controller
             @Override
             public void handle(ActionEvent event) 
             { 
-            	addTab("Purchases", purchasesTabController.getView()); 
-            	purchasesTabController.refreshPurchaseService();
+            	addTab("Purchases", purchasesTabController, "/views/PurchasesTab.fxml"); 
             }
         });
     	
@@ -96,17 +89,20 @@ public class MainWindowController extends Controller
         });
     }
     
-    private void addTab(String name, Node content)
+    private void addTab(String name, Controller controller, String viewPath)
     {
+    	if (controller == null)
+    		controller = fxmlLoader.load(viewPath);
+    	
     	for (Tab tab : mainTabPane.getTabs())
-    		if (tab.getContent().equals(content))
+    		if (tab.getContent().equals(controller.getView()))
     		{
     	    	mainTabPane.getSelectionModel().select(tab);
     	    	return;
     		}
     	
     	Tab tab = new Tab(name);
-    	tab.setContent(content);
+    	tab.setContent(controller.getView());
     	mainTabPane.getTabs().add(tab);
     	mainTabPane.getSelectionModel().select(tab);
     }
