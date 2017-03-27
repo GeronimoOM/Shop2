@@ -1,5 +1,7 @@
 package ukma.groupproject.shop.service;
 
+import java.util.List;
+
 import ukma.groupproject.shop.model.Purchase;
 
 public interface PurchaseService {
@@ -11,5 +13,7 @@ public interface PurchaseService {
     void update(Purchase purchase);
 
     void delete(Purchase purchase);
+
+	List<Purchase> getAll();
 
 }
