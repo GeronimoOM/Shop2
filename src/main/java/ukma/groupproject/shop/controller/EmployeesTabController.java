@@ -99,19 +99,8 @@ public class EmployeesTabController extends Controller {
         nameColumn.setCellValueFactory(new PropertyValueFactory<Employee, String>("name"));
 
         salaryColumn.setCellValueFactory(new PropertyValueFactory<Employee, Integer>("salary"));
-        
-        
-        /* 
-         *  SOMETHING
-         *  WRONG
-         *  HERE
-         */
-        departmentColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Employee, Department>, ObservableValue<Department>>() {
-            @Override
-            public ObservableValue<Department> call(TableColumn.CellDataFeatures<Employee, Department> param) {
-                return new ReadOnlyObjectWrapper<>(param.getValue().getDepartment());
-            }
-        });
+
+        departmentColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getDepartment()));
         departmentColumn.setCellFactory(new Callback<TableColumn<Employee, Department>, TableCell<Employee, Department>>() {
             @Override
             public TableCell<Employee, Department> call(TableColumn<Employee, Department> param) {

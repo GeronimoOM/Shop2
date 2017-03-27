@@ -9,7 +9,7 @@ import ukma.groupproject.shop.model.Employee;
 @Repository
 public class HibernateEmployeeDao extends AbstractHibernateDao<Employee, Long> implements EmployeeDao {
 
-    private static final String HQL_SELECT_ALL_EMPLOYEES = "select e from Employee e";
+    private static final String HQL_SELECT_ALL_EMPLOYEES = "select e from Employee e join fetch e.department";
 
     public HibernateEmployeeDao() {
         super(Employee.class);

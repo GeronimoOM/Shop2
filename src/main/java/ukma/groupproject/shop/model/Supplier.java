@@ -1,6 +1,11 @@
 package ukma.groupproject.shop.model;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,7 @@ public class Supplier implements Serializable {
     @JoinTable(name = "sh_suppliers_items",
             joinColumns = @JoinColumn(name = "supplier_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id"))
+    @Cascade(CascadeType.PERSIST)
     private List<Item> items = new ArrayList<>();
 
     public Supplier() {}
