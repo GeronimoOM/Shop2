@@ -8,19 +8,19 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane id="BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="148.0" prefWidth="341.0000999999975" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<BorderPane id="BorderPane" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="240.0" prefWidth="335.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ukma.groupproject.shop.controller.CreateEmployeeController">
   <bottom>
-    <BorderPane prefHeight="41.0" prefWidth="600.0">
+    <BorderPane prefHeight="55.0" prefWidth="335.0">
       <center>
-        <Button mnemonicParsing="false" text="Create Employee" />
+        <Button fx:id="createButton" mnemonicParsing="false" text="Create Employee" />
       </center>
     </BorderPane>
   </bottom>
   <center>
-    <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+    <VBox prefHeight="125.0" prefWidth="335.0" spacing="10.0">
       <children>
-        <TextField prefWidth="200.0" promptText="Name" />
-        <TextField prefWidth="200.0" promptText="Salary" />
+        <TextField fx:id="nameTextField" prefWidth="200.0" promptText="Name" />
+        <TextField fx:id="salaryTextField" prefWidth="200.0" promptText="Salary" />
         <ChoiceBox fx:id="departmentChoiceBox" prefWidth="322.0">
           <items>
             <FXCollections fx:factory="observableArrayList">

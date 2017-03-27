@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -32,7 +31,6 @@ import ukma.groupproject.shop.app.SpringJavaFxApplication;
 import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Employee;
-import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.service.EmployeeService;
 
 @Component
@@ -66,7 +64,7 @@ public class EmployeesTabController extends Controller {
             @Override public void handle(ActionEvent e) {
             	getView().setDisable(true);
             	createEmployeeController = (CreateEmployeeController) fxmlLoader.load("/views/CreateEmployee.fxml");
-            	createEmployeeScene = new Scene((Parent) createEmployeeController.getView());
+            	createEmployeeScene = new Scene((Parent) createEmployeeController.getView(), 335, 240);
             	createEmployeeScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 
             	Stage createDepStage = new Stage();
