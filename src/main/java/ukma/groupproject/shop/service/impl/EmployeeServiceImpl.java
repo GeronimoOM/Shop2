@@ -1,5 +1,7 @@
 package ukma.groupproject.shop.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,4 +35,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void delete(Employee employee) {
         employeeDao.delete(employee);
     }
+
+	@Override
+	public List<Employee> getAll() {
+		return employeeDao.getAll();
+	}
 }

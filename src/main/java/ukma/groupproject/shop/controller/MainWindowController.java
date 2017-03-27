@@ -34,6 +34,7 @@ public class MainWindowController extends Controller
     private ItemsTabController itemsTabController;
     private SuppliersTabController suppliersTabController;
     private DepartmentsTabController departmentsTabController;
+    private EmployeesTabController employeesTabController;
 
     @Override
     public void initialize() 
@@ -41,6 +42,7 @@ public class MainWindowController extends Controller
         itemsTabController = (ItemsTabController) fxmlLoader.load("/views/ItemsTab.fxml");
         suppliersTabController = (SuppliersTabController) fxmlLoader.load("/views/SuppliersTab.fxml");
         departmentsTabController = (DepartmentsTabController) fxmlLoader.load("/views/DepartmentsTab.fxml");
+        employeesTabController = (EmployeesTabController) fxmlLoader.load("/views/EmployeesTab.fxml");
     	
     	itemsMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -62,6 +64,15 @@ public class MainWindowController extends Controller
             { 
             	addTab("Departments", departmentsTabController.getView()); 
             	departmentsTabController.refreshDepartmentService();
+            }
+        });
+    	
+    	employeesMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) 
+            { 
+            	addTab("Employees", employeesTabController.getView()); 
+            	employeesTabController.refreshEmployeeService();
             }
         });
     	
