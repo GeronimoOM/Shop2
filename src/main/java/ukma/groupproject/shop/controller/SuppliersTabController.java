@@ -15,9 +15,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -51,21 +54,38 @@ public class SuppliersTabController extends Controller {
     @Override
     public void initialize() 
     {
-        createSupplierController = (CreateSupplierController) fxmlLoader.load("/views/CreateSupplier.fxml");
-    	createSupplierScene = new Scene((Parent) createSupplierController.getView());
-    	createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
-
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
+            	getView().setDisable(true);
+                createSupplierController = (CreateSupplierController) fxmlLoader.load("/views/CreateSupplier.fxml");
+            	createSupplierScene = new Scene((Parent) createSupplierController.getView());
+            	createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+
             	Stage createSupplierStage = new Stage();
-            	createSupplierStage.setTitle("Create Supplier");
+            	createSupplierStage.setTitle("Create New Supplier");
             	createSupplierStage.setScene(createSupplierScene);
-            	createSupplierStage.initModality(Modality.WINDOW_MODAL); 
+            	createSupplierStage.initModality(Modality.APPLICATION_MODAL); 
             	createSupplierStage.initOwner(getView().getScene().getWindow());
             	createSupplierStage.showAndWait();
+        		refreshSupplierService();
+            	getView().setDisable(false);
             }
         });
         
+        removeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+            	Supplier s = suppliersTable.getSelectionModel().getSelectedItem();
+            	Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete supplier " + s.getName() + "?", ButtonType.YES, ButtonType.NO);
+            	alert.initModality(Modality.APPLICATION_MODAL);
+            	alert.showAndWait();
+            	if (alert.getResult() == ButtonType.YES)
+            	{
+            		supplierService.delete(s);
+            		refreshSupplierService();
+            	}
+            }
+        });
+
     	suppliers = FXCollections.observableList(supplierService.getAll());
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("name"));
@@ -83,8 +103,7 @@ public class SuppliersTabController extends Controller {
             }
         };
 
-        getSuppliersService.reset();
-        getSuppliersService.start();
+        refreshSupplierService();
         
         getSuppliersService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
@@ -95,6 +114,12 @@ public class SuppliersTabController extends Controller {
 
         suppliersTable.setItems(suppliers);
         
+    }
+    
+    void refreshSupplierService()
+    {
+        getSuppliersService.reset();
+        getSuppliersService.start();
     }
     
 }

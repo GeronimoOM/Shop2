@@ -37,4 +37,14 @@ public class SupplierServiceImpl implements SupplierService {
 	public List<Supplier> getAll() {
         return supplierDao.getAll();
 	}
+
+	@Override
+	public void persist(Supplier s) {
+		supplierDao.persist(s);
+	}
+
+	@Override
+	public void delete(Supplier s) {
+		supplierDao.delete(s);
+	}
 }
