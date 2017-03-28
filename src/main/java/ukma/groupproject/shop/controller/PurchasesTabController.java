@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.collections.FXCollections;
@@ -33,6 +34,7 @@ import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.PurchaseService;
 
 @Component
+@Scope("prototype")
 public class PurchasesTabController extends Controller {
 
     @FXML private TableView<Purchase> purchasesTable;
@@ -60,7 +62,7 @@ public class PurchasesTabController extends Controller {
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	getView().setDisable(true);
-                createPurchaseController = (CreatePurchaseController) fxmlLoader.load("/views/CreatePurchase.fxml");
+                createPurchaseController = (CreatePurchaseController) fxmlLoader.load("views/CreatePurchase.fxml");
             	createPurchaseScene = new Scene((Parent) createPurchaseController.getView());
             	createPurchaseScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 

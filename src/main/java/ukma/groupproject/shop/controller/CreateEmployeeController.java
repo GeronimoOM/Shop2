@@ -1,6 +1,7 @@
 package ukma.groupproject.shop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.beans.value.ChangeListener;
@@ -25,6 +26,7 @@ import ukma.groupproject.shop.service.DepartmentService;
 import ukma.groupproject.shop.service.EmployeeService;
 
 @Component
+@Scope("prototype")
 public class CreateEmployeeController extends Controller {
 
 	@FXML Button createButton;

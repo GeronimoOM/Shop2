@@ -21,6 +21,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Item;
@@ -30,6 +31,7 @@ import ukma.groupproject.shop.service.ItemService;
 import java.util.List;
 
 @Component
+@Scope("prototype")
 public class ItemsTabController extends Controller {
 
     @FXML private ChoiceBox<Department> departmentChoiceBox;

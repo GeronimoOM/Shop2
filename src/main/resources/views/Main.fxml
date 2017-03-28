@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="538.0" prefWidth="780.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ukma.groupproject.shop.controller.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="538.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ukma.groupproject.shop.controller.MainController">
   <center>
     <BorderPane prefHeight="200.0" prefWidth="200.0">
       <center>
@@ -14,8 +14,8 @@
       <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="41.0" prefWidth="780.0" spacing="24.0">
           <children>
-            <Label text="not logged in" />
-            <Button mnemonicParsing="false" text="Log In" />
+            <Label fx:id="employeeNameLabel" />
+            <Button fx:id="loginButton" mnemonicParsing="false" text="Log In" />
           </children>
           <padding>
             <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -29,13 +29,13 @@
       <menus>
         <Menu id="dataMenu" text="Data">
           <items>
-            <MenuItem id="departmentsMenuItem" text="Departments" fx:id="departmentsMenuItem" />
-            <MenuItem id="itemsMenuItem" text="Items" fx:id="itemsMenuItem" />
-            <MenuItem id="ordersMenuItem" text="Orders" fx:id="ordersMenuItem" />
-            <MenuItem id="suppliersMenuItem" text="Suppliers" fx:id="suppliersMenuItem" />
-            <MenuItem id="suppliesMenuItem" text="Supplies" fx:id="suppliesMenuItem" />
-            <MenuItem id="employeesMenuItem" text="Employees" fx:id="employeesMenuItem" />
-            <MenuItem id="purchasesMenuItem" text="Purchases" fx:id="purchasesMenuItem" />
+            <MenuItem id="departmentsMenuItem" fx:id="departmentsMenuItem" text="Departments" />
+            <MenuItem id="itemsMenuItem" fx:id="itemsMenuItem" text="Items" />
+            <MenuItem id="ordersMenuItem" fx:id="ordersMenuItem" text="Orders" />
+            <MenuItem id="suppliersMenuItem" fx:id="suppliersMenuItem" text="Suppliers" />
+            <MenuItem id="suppliesMenuItem" fx:id="suppliesMenuItem" text="Supplies" />
+            <MenuItem id="employeesMenuItem" fx:id="employeesMenuItem" text="Employees" />
+            <MenuItem id="purchasesMenuItem" fx:id="purchasesMenuItem" text="Purchases" />
           </items>
         </Menu>
         <Menu id="analyseMenu" mnemonicParsing="false" text="Statistics">
@@ -48,7 +48,7 @@
         </Menu>
         <Menu id="analyseMenu" mnemonicParsing="false" text="System">
           <items>
-            <MenuItem id="exitMenuItem" mnemonicParsing="false" text="Exit" fx:id="exitMenuItem" />
+            <MenuItem id="exitMenuItem" fx:id="exitMenuItem" mnemonicParsing="false" text="Exit" />
           </items>
         </Menu>
       </menus>

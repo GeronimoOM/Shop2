@@ -21,13 +21,8 @@ public class SpringFxmlLoaderImpl implements SpringFxmlLoader {
     public Controller load(String path) {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(SpringFxmlLoaderImpl.class.getResource(path));
-            loader.setControllerFactory(new Callback<Class<?>, Object>() {
-                @Override
-                public Object call(Class<?> controllerClass) {
-                    return applicationContext.getBean(controllerClass);
-                }
-            });
+            loader.setLocation(SpringFxmlLoaderImpl.class.getClassLoader().getResource(path));
+            loader.setControllerFactory(controllerClass -> applicationContext.getBean(controllerClass));
             Node view = (Node) loader.load();
             Controller controller = loader.getController();
             if(controller != null) {

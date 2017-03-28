@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.beans.value.ChangeListener;
@@ -38,6 +39,7 @@ import ukma.groupproject.shop.service.ItemService;
 import ukma.groupproject.shop.service.PurchaseService;
 
 @Component
+@Scope("prototype")
 public class CreatePurchaseController extends Controller {
 
 	@FXML ListView<Item> allItemsList;

@@ -3,6 +3,7 @@ package ukma.groupproject.shop.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.collections.FXCollections;
@@ -30,6 +31,7 @@ import ukma.groupproject.shop.service.SupplierService;
 import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 @Component
+@Scope("prototype")
 public class CreateSupplierController extends Controller {
 
 	@FXML ListView<Item> allItemsList;

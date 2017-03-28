@@ -1,6 +1,7 @@
 package ukma.groupproject.shop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.service.DepartmentService;
 
 @Component
+@Scope("prototype")
 public class CreateDepartmentController extends Controller {
 
 	@FXML Button createButton;

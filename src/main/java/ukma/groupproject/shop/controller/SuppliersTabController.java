@@ -3,6 +3,7 @@ package ukma.groupproject.shop.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.collections.FXCollections;
@@ -30,6 +31,7 @@ import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.SupplierService;
 
 @Component
+@Scope("prototype")
 public class SuppliersTabController extends Controller {
 
     @FXML private TableView<Supplier> suppliersTable;
@@ -56,7 +58,7 @@ public class SuppliersTabController extends Controller {
     {
         createButton.setOnAction(e -> {
             getView().setDisable(true);
-            createSupplierController = (CreateSupplierController) fxmlLoader.load("/views/CreateSupplier.fxml");
+            createSupplierController = (CreateSupplierController) fxmlLoader.load("views/CreateSupplier.fxml");
             createSupplierScene = new Scene((Parent) createSupplierController.getView());
             createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 
