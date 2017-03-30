@@ -35,7 +35,9 @@ import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Purchase;
 import ukma.groupproject.shop.model.PurchaseItem;
+import ukma.groupproject.shop.model.dto.ItemAmount;
 import ukma.groupproject.shop.service.ItemService;
+import ukma.groupproject.shop.service.PurchaseFactory;
 import ukma.groupproject.shop.service.PurchaseService;
 
 @Component
@@ -43,7 +45,7 @@ import ukma.groupproject.shop.service.PurchaseService;
 public class CreatePurchaseController extends Controller {
 
 	@FXML ListView<Item> allItemsList;
-	@FXML ListView<PurchaseItem> addedItemsList;
+	@FXML ListView<ItemAmount> addedItemsList;
 
 	@FXML Button addButton;
 	@FXML Button removeButton;
@@ -53,10 +55,11 @@ public class CreatePurchaseController extends Controller {
 
     @Autowired private ItemService itemService;
     @Autowired private PurchaseService purchaseService;
+    @Autowired private PurchaseFactory purchaseFactory;
 
     private ObservableList<Item> allItems;
-    private ObservableList<PurchaseItem> addedItems;
-    List<PurchaseItem> addedItemsData;
+    private ObservableList<ItemAmount> addedItems;
+    List<ItemAmount> addedItemsData;
     
     private Service<List<Item>> getItemsService;
 
@@ -77,11 +80,11 @@ public class CreatePurchaseController extends Controller {
 			}
         });
 
-    	addedItemsData = new ArrayList<PurchaseItem>();
+    	addedItemsData = new ArrayList<ItemAmount>();
     	addedItems = FXCollections.observableList(addedItemsData);
-    	addedItemsList.setCellFactory(param -> new ListCell<PurchaseItem>() {
+    	addedItemsList.setCellFactory(param -> new ListCell<ItemAmount>() {
     		@Override
-    		    protected void updateItem(PurchaseItem item, boolean empty) {
+    		    protected void updateItem(ItemAmount item, boolean empty) {
     		        super.updateItem(item, empty);
     		        this.setText(item == null ? null : item.getAmount() + " of " + item.getItem().getName() + "");
     		    }
@@ -123,14 +126,14 @@ public class CreatePurchaseController extends Controller {
             		 return;
             	 }
             		 
-            	 for (PurchaseItem addedItem : addedItems)
+            	 for (ItemAmount addedItem : addedItems)
             		 if (addedItem.getItem().equals(allItemsList.getSelectionModel().getSelectedItem()))
             		 {
             			 // only update added items list with new amount if item already added
             			 addedItem.setAmount(Integer.valueOf(amountTextField.getText()));
             			 return;
             		 }
-            	 addedItems.add(new PurchaseItem(null, allItemsList.getSelectionModel().getSelectedItem(), Integer.valueOf(amountTextField.getText())));
+            	 addedItems.add(new ItemAmount(allItemsList.getSelectionModel().getSelectedItem(), Integer.valueOf(amountTextField.getText())));
             	 allItemsList.getSelectionModel().clearSelection();
              }
          });
@@ -152,15 +155,10 @@ public class CreatePurchaseController extends Controller {
             	 }
             	 else
             	 {
-            		 Purchase p = new Purchase();
-            		 p.setDate(new Date());
-            		 p.setItems(addedItemsData);
-            		 // TODO: only logged in employees can add, pass logged in employee here
-            		 p.setEmployee(null);
+            		 Purchase p = purchaseFactory.create(MainController.employee.get(), addedItemsData);
             		 purchaseService.persist(p);
-            		 
-            		 Stage stage = (Stage) createButton.getScene().getWindow();
-            		 stage.close();
+
+            		 ((Stage) createButton.getScene().getWindow()).close();
             	 }
             	 createButton.getParent().getParent().setDisable(false);
              }

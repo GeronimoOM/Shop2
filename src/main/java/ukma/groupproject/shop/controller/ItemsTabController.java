@@ -12,19 +12,29 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import ukma.groupproject.shop.app.SpringJavaFxApplication;
+import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Department;
+import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Item;
+import ukma.groupproject.shop.model.Order;
 import ukma.groupproject.shop.service.DepartmentService;
 import ukma.groupproject.shop.service.ItemService;
 
@@ -40,6 +50,8 @@ public class ItemsTabController extends Controller {
     @FXML private TableColumn<Item, Integer> amountColumn;
     @FXML private TableColumn<Item, Integer> minAmountColumn;
     @FXML private TableColumn<Item, Department> departmentColumn;
+    
+    @FXML private Button createOrderButton;
 
     @Autowired private ItemService itemService;
     @Autowired private DepartmentService departmentService;
@@ -55,6 +67,12 @@ public class ItemsTabController extends Controller {
     private static final int DEPARTMENT_COLUMN_HIDE_ANIMATION_DURATION_MILLIS = 200;
     private Timeline departmentColumnHideAnimation;
     private Timeline departmentColumnShowAnimation;
+
+    @Autowired
+    private SpringFxmlLoader fxmlLoader;
+    
+    private Scene createOrderScene;
+    private CreateOrderController createOrderController;
 
     @Override
     public void initialize() {
@@ -118,6 +136,37 @@ public class ItemsTabController extends Controller {
         initializeAnimations();
 
         itemsTable.setItems(items);
+        
+        // disable or enable create order button depending on the fact of employee has logged in
+        createOrderButton.setDisable(MainController.employee.get() == null);
+        MainController.employee.addListener(new ChangeListener<Employee>() {
+			@Override
+			public void changed(ObservableValue<? extends Employee> observable, Employee oldValue, Employee newValue) {
+				createOrderButton.setDisable(newValue == null || itemsTable.getSelectionModel().getSelectedItem() == null);
+			}
+        });
+        itemsTable.getSelectionModel().selectedItemProperty().addListener(event -> {
+        	createOrderButton.setDisable(MainController.employee.get() == null || itemsTable.getSelectionModel().getSelectedItem() == null);
+        });
+        
+        createOrderButton.setOnAction(event -> {
+        	getView().setDisable(true);
+            
+        	createOrderController = (CreateOrderController) fxmlLoader.load("views/CreateOrder.fxml");
+            createOrderController.item.set(itemsTable.getSelectionModel().getSelectedItem());
+            
+            createOrderScene = new Scene((Parent) createOrderController.getView());
+            createOrderScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+
+            Stage createOrderStage = new Stage();
+            createOrderStage.setTitle("Create New Order");
+            createOrderStage.setScene(createOrderScene);
+            createOrderStage.initModality(Modality.APPLICATION_MODAL);
+            createOrderStage.initOwner(getView().getScene().getWindow());
+            createOrderStage.showAndWait();
+
+            getView().setDisable(false);
+        });
     }
 
     private void initializeServices() {

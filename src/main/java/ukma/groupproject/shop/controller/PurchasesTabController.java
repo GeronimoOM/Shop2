@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -22,14 +25,19 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import ukma.groupproject.shop.app.SpringJavaFxApplication;
 import ukma.groupproject.shop.context.SpringFxmlLoader;
+import ukma.groupproject.shop.model.Department;
+import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Purchase;
+import ukma.groupproject.shop.model.PurchaseItem;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.PurchaseService;
 
@@ -39,7 +47,7 @@ public class PurchasesTabController extends Controller {
 
     @FXML private TableView<Purchase> purchasesTable;
     @FXML private TableColumn<Purchase, Date> dateColumn;
-    @FXML private TableColumn<Purchase, Item> itemsColumn;
+    @FXML private TableColumn<Purchase, List<PurchaseItem>> itemColumn;
     
     @FXML private Button createButton;
     @FXML private Button removeButton;
@@ -76,6 +84,13 @@ public class PurchasesTabController extends Controller {
             	getView().setDisable(false);
             }
         });
+        createButton.setDisable(MainController.employee.get() == null);
+        MainController.employee.addListener(new ChangeListener<Employee>() {
+			@Override
+			public void changed(ObservableValue<? extends Employee> observable, Employee oldValue, Employee newValue) {
+				createButton.setDisable(newValue == null);
+			}
+        });
         
         removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -94,6 +109,8 @@ public class PurchasesTabController extends Controller {
     	purchases = FXCollections.observableList(purchaseService.getAll());
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<Purchase, Date>("date"));
+        
+        // TODO: show items in itemColumn
     	    
         getPurchasesService = new Service<List<Purchase>>() {
             @Override
