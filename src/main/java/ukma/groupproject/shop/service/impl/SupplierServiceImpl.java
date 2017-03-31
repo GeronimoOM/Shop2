@@ -11,6 +11,7 @@ import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.ItemService;
 import ukma.groupproject.shop.service.SupplierService;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 @Service
 @Transactional
@@ -43,13 +44,21 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierDao.getAll();
 	}
 
-	@Override
+    @Override
+    public List<Supplier> getSupplying(Item item) {
+        return supplierDao.getSupplying(item);
+    }
+
+    @Override
 	public void persist(Supplier s) {
+        if(getByName(s.getName()) != null) {
+            throw new ShopBusinessException("Supplier with specified name already exists");
+        }
 		supplierDao.persist(s);
 	}
 
 	@Override
 	public void delete(Supplier s) {
-		supplierDao.delete(s);
+        supplierDao.delete(s);
 	}
 }

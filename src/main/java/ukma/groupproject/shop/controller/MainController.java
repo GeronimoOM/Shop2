@@ -2,15 +2,12 @@ package ukma.groupproject.shop.controller;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,7 +16,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import ukma.groupproject.shop.app.SpringJavaFxApplication;
 import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Employee;
@@ -62,7 +58,6 @@ public class MainController extends Controller {
     private EmployeesTabController employeesTabController;
     private PurchasesTabController purchasesTabController;
 
-    
     static public ObjectProperty<Employee> employee;
     
     private EventHandler<ActionEvent> loginHandler;
@@ -85,7 +80,6 @@ public class MainController extends Controller {
 
             if (loginController.getEmployee() != null) {
                 employee.set(loginController.getEmployee());
-                employeeNameLabel.setText(loginController.getEmployee().getName());
             }
         };
         logoutHandler = event -> employee.set(null);

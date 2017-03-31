@@ -107,8 +107,6 @@ public class CreateSupplierController extends Controller {
 			createButton.getParent().getParent().setDisable(true);
 			if (nameTextField.getText().isEmpty()) {
 				showErrorAlert("Name cannot be empty!");
-			} else if(supplierService.getByName(nameTextField.getText()) != null) {
-				showErrorAlert("Such supplier already exists!");
 			} else {
 				try {
 					Supplier supplier = supplierFactory.create(nameTextField.getText(), addedItems);

@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.DepartmentDao;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.service.DepartmentService;
+import ukma.groupproject.shop.service.EmployeeService;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 import java.util.List;
 
@@ -15,6 +17,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Override
     public Department get(Long id) {
@@ -33,6 +38,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void delete(Department department) {
+        if(!employeeService.getByDepartment(department).isEmpty()) {
+            throw new ShopBusinessException("Cannot delete department with employees");
+        }
         departmentDao.delete(department);
     }
 

@@ -2,6 +2,7 @@ package ukma.groupproject.shop.controller;
 
 import java.util.List;
 
+import javafx.scene.layout.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -47,6 +48,8 @@ public class EmployeesTabController extends Controller {
     @FXML private Button editButton;
     @FXML private Button removeButton;
 
+    @Autowired private MainController mainController;
+
     @Autowired private EmployeeService employeeService;
 
     private ObservableList<Employee> employees;
@@ -60,13 +63,18 @@ public class EmployeesTabController extends Controller {
     private Scene createEmployeeScene;
 
     @Override
-    public void initialize() 
-    {
+    public void initialize() {
+        employeesTable.prefWidthProperty().bind(((Region) mainController.getView()).widthProperty());
+
+        nameColumn.prefWidthProperty().bind(employeesTable.widthProperty().multiply(0.4));
+        salaryColumn.prefWidthProperty().bind(employeesTable.widthProperty().multiply(0.2));
+        departmentColumn.prefWidthProperty().bind(employeesTable.widthProperty().multiply(0.4));
+
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	getView().setDisable(true);
             	createEmployeeController = (CreateEmployeeController) fxmlLoader.load("views/CreateEmployee.fxml");
-            	createEmployeeScene = new Scene((Parent) createEmployeeController.getView(), 335, 240);
+            	createEmployeeScene = new Scene((Parent) createEmployeeController.getView());
             	createEmployeeScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 
             	Stage createDepStage = new Stage();

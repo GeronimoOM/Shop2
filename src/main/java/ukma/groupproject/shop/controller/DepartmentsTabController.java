@@ -54,8 +54,9 @@ public class DepartmentsTabController extends Controller {
     private Scene createDepartmentScene;
 
     @Override
-    public void initialize() 
-    {
+    public void initialize() {
+        nameColumn.prefWidthProperty().bind(departmentsTable.widthProperty());
+
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
             	getView().setDisable(true);

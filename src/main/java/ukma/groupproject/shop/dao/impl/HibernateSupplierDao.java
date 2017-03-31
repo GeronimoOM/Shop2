@@ -12,6 +12,7 @@ public class HibernateSupplierDao extends AbstractHibernateDao<Supplier, Long> i
 
     private static final String HQL_SELECT_ALL_SUPPLIERS = "select s from Supplier s";
     private static final String HQL_SELECT_SUPPLIER_BY_NAME = "select s from Supplier s where s.name=:name";
+    private static final String HQL_SELECT_SUPPLIER_SUPPLYING_ITEM = "select i.suppliedBy from Item i where i=:item";
 
     public HibernateSupplierDao() {
         super(Supplier.class);
@@ -25,5 +26,10 @@ public class HibernateSupplierDao extends AbstractHibernateDao<Supplier, Long> i
     @Override
     public Supplier getByName(String name) {
         return (Supplier) getSession().createQuery(HQL_SELECT_SUPPLIER_BY_NAME).setParameter("name", name).uniqueResult();
+    }
+
+    @Override
+    public List<Supplier> getSupplying(Item item) {
+        return getSession().createQuery(HQL_SELECT_SUPPLIER_SUPPLYING_ITEM).setParameter("item", item).list();
     }
 }

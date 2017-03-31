@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.EmployeeDao;
+import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.service.EmployeeService;
 
@@ -40,4 +41,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<Employee> getAll() {
 		return employeeDao.getAll();
 	}
+
+    @Override
+    public List<Employee> getByDepartment(Department department) {
+        return employeeDao.getByDepartment(department);
+    }
 }

@@ -13,6 +13,8 @@ public interface SupplierService {
     
     List<Supplier> getAll();
 
+    List<Supplier> getSupplying(Item item);
+
     boolean supplies(Supplier supplier, Item item);
 
     void persist(Supplier s);
