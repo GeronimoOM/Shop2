@@ -7,6 +7,8 @@ import ukma.groupproject.shop.dao.SupplyDao;
 import ukma.groupproject.shop.model.Supply;
 import ukma.groupproject.shop.service.SupplyService;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class SupplyServiceImpl implements SupplyService {
@@ -17,6 +19,11 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public Supply get(Long id) {
         return supplyDao.get(id);
+    }
+
+    @Override
+    public List<Supply> getAll() {
+        return supplyDao.getAll();
     }
 
     @Override

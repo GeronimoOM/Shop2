@@ -50,74 +50,50 @@ public class DepartmentsTabController extends Controller {
     @Autowired
     private SpringFxmlLoader fxmlLoader;
 
-    private CreateDepartmentController createDepartmentController;
-    private Scene createDepartmentScene;
-
     @Override
     public void initialize() {
         nameColumn.prefWidthProperty().bind(departmentsTable.widthProperty());
 
-        createButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	getView().setDisable(true);
-            	createDepartmentController = (CreateDepartmentController) fxmlLoader.load("views/CreateDepartment.fxml");
-            	createDepartmentScene = new Scene((Parent) createDepartmentController.getView());
-            	createDepartmentScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+        createButton.setOnAction(e -> {
+            getView().setDisable(true);
+            CreateDepartmentController createDepartmentController = (CreateDepartmentController) fxmlLoader.load("views/CreateDepartment.fxml");
+            createModal("Create Department", createDepartmentController).showAndWait();
 
-            	Stage createDepStage = new Stage();
-            	createDepStage.setTitle("Create New Department");
-            	createDepStage.setScene(createDepartmentScene);
-            	createDepStage.initModality(Modality.APPLICATION_MODAL); 
-            	createDepStage.initOwner(getView().getScene().getWindow());
-            	createDepStage.showAndWait();
-            	refreshDepartmentService();
-            	getView().setDisable(false);
-            }
+            refreshDepartmentService();
+            getView().setDisable(false);
         });
         
-        removeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	Department d = departmentsTable.getSelectionModel().getSelectedItem();
-            	Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete department " + d.getName() + "?", ButtonType.YES, ButtonType.NO);
-            	alert.initModality(Modality.APPLICATION_MODAL);
-            	alert.showAndWait();
-            	if (alert.getResult() == ButtonType.YES)
-            	{
-            		departmentService.delete(d);
-            		refreshDepartmentService();
-            	}
+        removeButton.setOnAction(e -> {
+            Department d = departmentsTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete department " + d.getName() + "?", ButtonType.YES, ButtonType.NO);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.YES) {
+                departmentService.delete(d);
+                refreshDepartmentService();
             }
         });
 
     	departments = FXCollections.observableList(departmentService.getAll());
 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<Department, String>("name"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         
         getDepartmentsService = new Service<List<Department>>() {
             @Override
             protected Task<List<Department>> createTask() {
-                Task<List<Department>> getDepartmentsTask = new Task<List<Department>>() {
+                return new Task<List<Department>>() {
                     @Override
                     protected List<Department> call() throws Exception {
                         return departmentService.getAll();
                     }
                 };
-                return getDepartmentsTask;
             }
         };
 
         refreshDepartmentService();
-        
-        getDepartmentsService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                departments.setAll(getDepartmentsService.getValue());
-            }
-        });
+        getDepartmentsService.setOnSucceeded(event -> departments.setAll(getDepartmentsService.getValue()));
 
-        departmentsTable.setItems(
-        		departments
-        		);
+        departmentsTable.setItems(departments);
     }
     
     void refreshDepartmentService()

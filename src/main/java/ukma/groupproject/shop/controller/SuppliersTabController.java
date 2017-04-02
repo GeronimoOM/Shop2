@@ -41,38 +41,25 @@ public class SuppliersTabController extends Controller {
     @FXML private Button editButton;
     @FXML private Button removeButton;
 
+    @Autowired private SpringFxmlLoader fxmlLoader;
     @Autowired private SupplierService supplierService;
 
     private ObservableList<Supplier> suppliers;
-
     private Service<List<Supplier>> getSuppliersService;
 
-    @Autowired
-    private SpringFxmlLoader fxmlLoader;
-
     private CreateSupplierController createSupplierController;
-    private Scene createSupplierScene;
 
     @Override
-    public void initialize() 
-    {
-        createButton.setOnAction(e -> {
-            getView().setDisable(true);
-            createSupplierController = (CreateSupplierController) fxmlLoader.load("views/CreateSupplier.fxml");
-            createSupplierScene = new Scene((Parent) createSupplierController.getView());
-            createSupplierScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+    public void initialize() {
+        nameColumn.prefWidthProperty().bind(suppliersTable.widthProperty());
 
-            Stage createSupplierStage = new Stage();
-            createSupplierStage.setTitle("Create New Supplier");
-            createSupplierStage.setScene(createSupplierScene);
-            createSupplierStage.initModality(Modality.APPLICATION_MODAL);
-            createSupplierStage.initOwner(getView().getScene().getWindow());
-            createSupplierStage.showAndWait();
+        createButton.setOnAction(e -> {
+            createSupplierController = (CreateSupplierController) fxmlLoader.load("views/CreateSupplier.fxml");
+            createModal("Create Supplier", createSupplierController).showAndWait();
 
             if(createSupplierController.getSupplier() != null) {
                 suppliers.add(createSupplierController.getSupplier());
             }
-            getView().setDisable(false);
         });
         
         removeButton.setOnAction(e -> {

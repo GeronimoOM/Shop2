@@ -2,6 +2,7 @@ package ukma.groupproject.shop.service;
 
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Order;
+import ukma.groupproject.shop.model.Supplier;
 
 import java.util.List;
 
@@ -15,8 +16,10 @@ public interface OrderService {
 
     void delete(Order order);
 
-    Order getWithItems(Long id);
+    List<Order> getOrdersBy(Employee employee);
 
-    List<Order> getOrderedBy(Employee employee);
+    List<Order> getOrdersFor(Supplier supplier);
+
+    List<Order> getActiveOrdersFor(Supplier supplier);
 
 }

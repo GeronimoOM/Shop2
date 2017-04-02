@@ -82,16 +82,11 @@ public class OrdersTabController extends Controller {
             }
         });
 
-    	orders = FXCollections.observableList(orderService.getOrderedBy(MainController.employee.get()));
+    	orders = FXCollections.observableList(orderService.getOrdersBy(MainController.employee.get()));
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<Order, Date>("date"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<Order, Integer>("amount"));
-        itemColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Order, Item>, ObservableValue<Item>>() {
-            @Override
-            public ObservableValue<Item> call(TableColumn.CellDataFeatures<Order, Item> param) {
-                return new ReadOnlyObjectWrapper<>(param.getValue().getItem());
-            }
-        });
+        itemColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getItem()));
         itemColumn.setCellFactory(new Callback<TableColumn<Order, Item>, TableCell<Order, Item>>() {
             @Override
             public TableCell<Order, Item> call(TableColumn<Order, Item> param) {
@@ -131,7 +126,7 @@ public class OrdersTabController extends Controller {
                 Task<List<Order>> getOrdersTask = new Task<List<Order>>() {
                     @Override
                     protected List<Order> call() throws Exception {
-                        return orderService.getOrderedBy(MainController.employee.get());
+                        return orderService.getOrdersBy(MainController.employee.get());
                     }
                 };
                 return getOrdersTask;

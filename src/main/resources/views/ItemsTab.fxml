@@ -7,25 +7,16 @@
 
 <BorderPane maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ukma.groupproject.shop.controller.ItemsTabController">
   <bottom>
-    <BorderPane prefHeight="68.0" prefWidth="-1.0">
-      <right>
-        <HBox alignment="CENTER_RIGHT" spacing="10.0">
-          <children>
-            <Button id="create" fx:id="createOrderButton" disable="true" mnemonicParsing="false" text="Create Order with this Item">
-              <HBox.margin>
-                <Insets right="50.0" />
-              </HBox.margin>
-            </Button>
-            <Button mnemonicParsing="false" text="Create" />
-            <Button mnemonicParsing="false" text="Edit" />
-            <Button mnemonicParsing="false" text="Delete" />
-          </children>
-          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" fx:id="x1" />
-          </padding>
-        </HBox>
-      </right>
-    </BorderPane>
+    <HBox alignment="CENTER_RIGHT" prefHeight="47.0" prefWidth="600.0" spacing="10.0">
+      <children>
+        <Button fx:id="createButton" mnemonicParsing="false" text="Create" />
+        <Button fx:id="editButton" mnemonicParsing="false" text="Edit" />
+        <Button fx:id="removeButton" mnemonicParsing="false" text="Remove" />
+      </children>
+      <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      </padding>
+    </HBox>
   </bottom>
   <center>
     <TableView fx:id="itemsTable" prefWidth="860.0">
@@ -41,7 +32,7 @@
     </TableView>
   </center>
   <top>
-    <BorderPane padding="$x1" prefHeight="41.0" prefWidth="1000.0">
+    <BorderPane prefHeight="41.0" prefWidth="1000.0">
       <left>
         <TextField prefWidth="300.0" promptText="Name" />
       </left>

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.OrderDao;
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Order;
+import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.OrderService;
 import ukma.groupproject.shop.service.SupplierService;
 
@@ -40,13 +41,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getWithItems(Long id) {
-        return orderDao.getWithItems(id);
+    public List<Order> getOrdersBy(Employee employee) {
+        return orderDao.getOrdersBy(employee);
     }
 
     @Override
-    public List<Order> getOrderedBy(Employee employee) {
-        return orderDao.getOrderedBy(employee);
+    public List<Order> getOrdersFor(Supplier supplier) {
+        return orderDao.getOrdersFor(supplier);
+    }
+
+    @Override
+    public List<Order> getActiveOrdersFor(Supplier supplier) {
+        return orderDao.getActiveOrdersFor(supplier);
     }
 
 }

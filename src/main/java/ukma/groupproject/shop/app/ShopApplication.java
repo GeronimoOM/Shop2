@@ -27,6 +27,7 @@ public class ShopApplication extends SpringJavaFxApplication {
         scene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
         mainStage.setTitle("Shop");
         mainStage.setScene(scene);
+        mainStage.setResizable(false);
         mainStage.show();
     }
 

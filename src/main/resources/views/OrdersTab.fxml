@@ -21,7 +21,7 @@
     </BorderPane>
   </bottom>
   <center>
-    <BorderPane prefHeight="200.0" prefWidth="200.0">
+    <BorderPane>
       <center>
         <TableView id="itemsTable" fx:id="ordersTable" prefWidth="1000.0">
           <columnResizePolicy>

@@ -34,7 +34,6 @@ import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Item;
-import ukma.groupproject.shop.model.Order;
 import ukma.groupproject.shop.service.DepartmentService;
 import ukma.groupproject.shop.service.ItemService;
 
@@ -51,7 +50,7 @@ public class ItemsTabController extends Controller {
     @FXML private TableColumn<Item, Integer> minAmountColumn;
     @FXML private TableColumn<Item, Department> departmentColumn;
     
-    @FXML private Button createOrderButton;
+    @FXML private Button createButton;
 
     @Autowired private ItemService itemService;
     @Autowired private DepartmentService departmentService;
@@ -83,12 +82,7 @@ public class ItemsTabController extends Controller {
         nameColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("name"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("amount"));
         minAmountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("minAmount"));
-        departmentColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, Department>, ObservableValue<Department>>() {
-            @Override
-            public ObservableValue<Department> call(TableColumn.CellDataFeatures<Item, Department> param) {
-                return new ReadOnlyObjectWrapper<>(param.getValue().getDepartment());
-            }
-        });
+        departmentColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getDepartment()));
         departmentColumn.setCellFactory(new Callback<TableColumn<Item, Department>, TableCell<Item, Department>>() {
             @Override
             public TableCell<Item, Department> call(TableColumn<Item, Department> param) {
@@ -138,18 +132,18 @@ public class ItemsTabController extends Controller {
         itemsTable.setItems(items);
         
         // disable or enable create order button depending on the fact of employee has logged in
-        createOrderButton.setDisable(MainController.employee.get() == null);
+        createButton.setDisable(MainController.employee.get() == null);
         MainController.employee.addListener(new ChangeListener<Employee>() {
 			@Override
 			public void changed(ObservableValue<? extends Employee> observable, Employee oldValue, Employee newValue) {
-				createOrderButton.setDisable(newValue == null || itemsTable.getSelectionModel().getSelectedItem() == null);
+				createButton.setDisable(newValue == null || itemsTable.getSelectionModel().getSelectedItem() == null);
 			}
         });
         itemsTable.getSelectionModel().selectedItemProperty().addListener(event -> {
-        	createOrderButton.setDisable(MainController.employee.get() == null || itemsTable.getSelectionModel().getSelectedItem() == null);
+        	createButton.setDisable(MainController.employee.get() == null || itemsTable.getSelectionModel().getSelectedItem() == null);
         });
         
-        createOrderButton.setOnAction(event -> {
+        createButton.setOnAction(event -> {
         	getView().setDisable(true);
             
         	createOrderController = (CreateOrderController) fxmlLoader.load("views/CreateOrder.fxml");

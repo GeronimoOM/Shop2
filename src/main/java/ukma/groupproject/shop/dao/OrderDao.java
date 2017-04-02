@@ -2,12 +2,15 @@ package ukma.groupproject.shop.dao;
 
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Order;
+import ukma.groupproject.shop.model.Supplier;
 
 import java.util.List;
 
 public interface OrderDao extends Dao<Order, Long> {
 
-    List<Order> getOrderedBy(Employee employee);
+    List<Order> getOrdersBy(Employee employee);
 
-    Order getWithItems(Long id);
+    List<Order> getOrdersFor(Supplier supplier);
+
+    List<Order> getActiveOrdersFor(Supplier supplier);
 }
