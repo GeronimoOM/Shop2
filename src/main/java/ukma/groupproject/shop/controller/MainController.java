@@ -15,6 +15,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Employee;
+import ukma.groupproject.shop.model.Purchase;
+import ukma.groupproject.shop.model.PurchaseItem;
+import ukma.groupproject.shop.service.PurchaseService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +56,17 @@ public class MainController extends Controller {
     private PurchasesTabController purchasesTabController;
     private SuppliesTabController suppliesTabController;
 
+    @Autowired private PurchaseService purchaseService;
+
     @Override
     public void initialize() {
+        for(Purchase p: purchaseService.getAllWithItems()) {
+            System.out.println(p.getDate());
+            for(PurchaseItem pi: p.getItems()) {
+                System.out.println(pi.getAmount() +" +" + pi.getItem().getName());
+            }
+        }
+
         employee = new SimpleObjectProperty<>();
         loginHandler = event -> {
             LoginController loginController = (LoginController) fxmlLoader.load("views/Login.fxml");
@@ -91,13 +103,15 @@ public class MainController extends Controller {
        		 	alert.showAndWait();
         	}
         });
-        suppliersMenuItem.setOnAction(event -> addTab("Suppliers",getSuppliersTabController()));
+        suppliersMenuItem.setOnAction(event -> addTab("Suppliers", getSuppliersTabController()));
         departmentsMenuItem.setOnAction(event -> addTab("Departments", getDepartmentsTabController()));
         employeesMenuItem.setOnAction(event -> addTab("Employees", getEmployeesTabController()));
         purchasesMenuItem.setOnAction(event -> addTab("Purchases", getPurchasesTabController()));
         suppliesMenuItem.setOnAction(event -> addTab("Supplies", getSuppliesTabController()));
 
         exitMenuItem.setOnAction(event -> Platform.exit());
+
+        addTab("Items", getItemsTabController());
     }
 
     private void addTab(String name, Controller controller) {
@@ -106,6 +120,9 @@ public class MainController extends Controller {
             tab = new Tab(name, controller.getView());
             mainTabPane.getTabs().add(tab);
             controllerTabs.put(controller, tab);
+            tab.setOnClosed(event -> {
+                controllerTabs.remove(controller);
+            });
         }
         mainTabPane.getSelectionModel().select(tab);
     }

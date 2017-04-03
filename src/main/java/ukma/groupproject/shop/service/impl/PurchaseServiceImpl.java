@@ -40,4 +40,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 	public List<Purchase> getAll() {
 		return purchaseDao.getAll();
 	}
+
+    @Override
+    public List<Purchase> getAllWithItems() {
+        return purchaseDao.getAllWithItems();
+    }
 }
