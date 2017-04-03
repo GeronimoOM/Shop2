@@ -1,7 +1,10 @@
 package ukma.groupproject.shop.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -38,6 +41,7 @@ import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Order;
 import ukma.groupproject.shop.model.Supplier;
+import ukma.groupproject.shop.model.Supply;
 import ukma.groupproject.shop.service.OrderService;
 
 @Component
@@ -84,7 +88,18 @@ public class OrdersTabController extends Controller {
 
     	orders = FXCollections.observableList(orderService.getOrdersBy(MainController.employee.get()));
 
-        dateColumn.setCellValueFactory(new PropertyValueFactory<Order, Date>("date"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date") );
+        DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+        dateColumn.setCellFactory(param -> new TableCell<Order, Date>() {
+            @Override
+            protected void updateItem(Date date, boolean empty) {
+                super.updateItem(date, empty);
+                if(!empty) {
+                    setText(dateFormat.format(date));
+                }
+            }
+        });
+        
         amountColumn.setCellValueFactory(new PropertyValueFactory<Order, Integer>("amount"));
         itemColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getItem()));
         itemColumn.setCellFactory(new Callback<TableColumn<Order, Item>, TableCell<Order, Item>>() {

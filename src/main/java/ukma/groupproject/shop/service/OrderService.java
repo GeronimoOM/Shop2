@@ -21,5 +21,6 @@ public interface OrderService {
     List<Order> getOrdersFor(Supplier supplier);
 
     List<Order> getActiveOrdersFor(Supplier supplier);
-
+    
+    List<Order> getAll();
 }

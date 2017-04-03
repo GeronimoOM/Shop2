@@ -55,4 +55,9 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.getActiveOrdersFor(supplier);
     }
 
+	@Override
+	public List<Order> getAll() {
+		return orderDao.getAll();
+	}
+
 }

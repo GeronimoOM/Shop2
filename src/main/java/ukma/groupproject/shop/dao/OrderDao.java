@@ -13,4 +13,6 @@ public interface OrderDao extends Dao<Order, Long> {
     List<Order> getOrdersFor(Supplier supplier);
 
     List<Order> getActiveOrdersFor(Supplier supplier);
+
+    List<Order> getAll();
 }

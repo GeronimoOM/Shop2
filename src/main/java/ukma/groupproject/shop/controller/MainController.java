@@ -61,7 +61,9 @@ public class MainController extends Controller {
     private EmployeesTabController employeesTabController = null;
     private PurchasesTabController purchasesTabController = null;
     private SuppliesTabController suppliesTabController = null;
+    
     private SummaryStatsController summaryStatsController = null;
+    private EmployeeStatsController employeeStatsController = null;
 
     @Autowired private PurchaseService purchaseService;
 
@@ -117,6 +119,7 @@ public class MainController extends Controller {
         suppliesMenuItem.setOnAction(event -> addTab("Supplies", getSuppliesTabController()));
 
         summaryMenuItem.setOnAction(event -> addTab("Day Summary", getSummaryController()));
+        employeeActivityMenuItem.setOnAction(event -> addTab("Employee Activity", getEmployeeActivityController()));
 
         exitMenuItem.setOnAction(event -> Platform.exit());
 
@@ -190,5 +193,11 @@ public class MainController extends Controller {
         if(summaryStatsController == null)
         	summaryStatsController = (SummaryStatsController) fxmlLoader.load("views/SummaryStats.fxml");
         return summaryStatsController;
+    }
+
+    private EmployeeStatsController getEmployeeActivityController() {
+        if(employeeStatsController == null)
+        	employeeStatsController = (EmployeeStatsController) fxmlLoader.load("views/EmployeeStats.fxml");
+        return employeeStatsController;
     }
 }

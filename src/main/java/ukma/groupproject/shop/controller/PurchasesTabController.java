@@ -1,7 +1,10 @@
 package ukma.groupproject.shop.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,8 +114,18 @@ public class PurchasesTabController extends Controller {
 
     	purchases = FXCollections.observableList(purchaseService.getAllWithItems());
 
-        dateColumn.setCellValueFactory(new PropertyValueFactory<Purchase, Date>("date"));
-
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date") );
+        DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+        dateColumn.setCellFactory(param -> new TableCell<Purchase, Date>() {
+            @Override
+            protected void updateItem(Date date, boolean empty) {
+                super.updateItem(date, empty);
+                if(!empty) {
+                    setText(dateFormat.format(date));
+                }
+            }
+        });
+        
         itemColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getItems()));
         itemColumn.setCellFactory(param -> new TableCell<Purchase, List<PurchaseItem>>() {
             @Override
