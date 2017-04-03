@@ -16,4 +16,6 @@ public interface PurchaseService {
 
 	List<Purchase> getAll();
 
+    List<Purchase> getAllWithItems();
+
 }
