@@ -1,9 +1,9 @@
 package ukma.groupproject.shop.controller;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -14,7 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
-import ukma.groupproject.shop.model.Item;
+import javafx.scene.control.Button;
 import ukma.groupproject.shop.model.Purchase;
 import ukma.groupproject.shop.model.PurchaseItem;
 import ukma.groupproject.shop.model.Supply;
@@ -27,6 +27,8 @@ import ukma.groupproject.shop.service.SupplyService;
 public class SummaryStatsController extends Controller {
 
 	@FXML private BarChart<String, Integer> chart;
+
+	@FXML private Button reloadButton;
 	
     @Autowired private PurchaseService purchaseService;
     @Autowired private SupplyService supplyService;
@@ -50,19 +52,27 @@ public class SummaryStatsController extends Controller {
     @Override
     public void initialize() 
     {
-    	purchases = FXCollections.observableList(purchaseService.getAll());
+    	reloadButton.setOnAction(e -> loadData());
+    	loadData();
+    }
+    
+    private void loadData()
+    {
+    	chart.getData().clear();
+    	
+    	purchases = FXCollections.observableList(purchaseService.getAllWithItems());
     	for (int i = 0; i < purchases.size(); i ++)
-    		if (purchases.get(i).getDate().compareTo(new Date()) >= 0)
+    		// very half assed way to see if some Date() is today
+    		if (Math.abs(purchases.get(i).getDate().getTime() - (new Date()).getTime()) > TimeUnit.DAYS.toMillis(1))
     			purchases.remove(i --);
 
     	supplies = FXCollections.observableList(supplyService.getAll());
     	for (int i = 0; i < supplies.size(); i ++)
-    		if (supplies.get(i).getDate().compareTo(new Date()) >= 0)
+        	if (Math.abs(supplies.get(i).getDate().getTime() - (new Date()).getTime()) > TimeUnit.DAYS.toMillis(1))
     			supplies.remove(i --);
     	
     	items = new HashMap<String, ItemSummary>();
     	
-    	/*
     	for (Purchase p : purchases)
         	for (PurchaseItem i : p.getItems())
         	{
@@ -82,21 +92,18 @@ public class SummaryStatsController extends Controller {
         		else
         			items.put(name, new ItemSummary(0, i.getAmount()));
         	}
-		*/
     	
-    	items.put("lol", new ItemSummary(5, 10));
-    	items.put("lolss", new ItemSummary(9, 2));
     	
-        XYChart.Series purchased_series = new XYChart.Series();
+        XYChart.Series<String, Integer> purchased_series = new XYChart.Series<String, Integer>();
         purchased_series.setName("purchased");       
 
-        XYChart.Series supplied_series = new XYChart.Series();
+        XYChart.Series<String, Integer> supplied_series = new XYChart.Series<String, Integer>();
         supplied_series.setName("supplied");       
     	
     	for (String name : items.keySet())
     	{
-    		purchased_series.getData().add(new XYChart.Data(name, items.get(name).purchased));
-    		supplied_series.getData().add(new XYChart.Data(name, items.get(name).supplied));
+    		purchased_series.getData().add(new XYChart.Data<String, Integer>(name, items.get(name).purchased));
+    		supplied_series.getData().add(new XYChart.Data<String, Integer>(name, items.get(name).supplied));
         }
     	
     	chart.getData().add(purchased_series);

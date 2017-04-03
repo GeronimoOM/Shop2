@@ -2,6 +2,7 @@ package ukma.groupproject.shop.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -39,6 +40,8 @@ import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Purchase;
 import ukma.groupproject.shop.model.PurchaseItem;
 import ukma.groupproject.shop.model.Supplier;
+import ukma.groupproject.shop.model.Supply;
+import ukma.groupproject.shop.model.SupplyItem;
 import ukma.groupproject.shop.service.PurchaseService;
 
 @Component
@@ -106,11 +109,21 @@ public class PurchasesTabController extends Controller {
             }
         });
 
-    	purchases = FXCollections.observableList(purchaseService.getAll());
+    	purchases = FXCollections.observableList(purchaseService.getAllWithItems());
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<Purchase, Date>("date"));
-        
-        // TODO: show items in itemColumn
+
+        itemColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getItems()));
+        itemColumn.setCellFactory(param -> new TableCell<Purchase, List<PurchaseItem>>() {
+            @Override
+            protected void updateItem(List<PurchaseItem> items, boolean empty) {
+                super.updateItem(items, empty);
+                if (!empty) {
+                    setText(items.stream().map(i -> i.getItem().getName() + " [" + i.getAmount() + "]")
+                    		.collect(Collectors.joining(", ")));
+                }
+            }
+        });
     	    
         getPurchasesService = new Service<List<Purchase>>() {
             @Override
@@ -118,7 +131,7 @@ public class PurchasesTabController extends Controller {
                 Task<List<Purchase>> getPurchasesTask = new Task<List<Purchase>>() {
                     @Override
                     protected List<Purchase> call() throws Exception {
-                        return purchaseService.getAll();
+                        return purchaseService.getAllWithItems();
                     }
                 };
                 return getPurchasesTask;
