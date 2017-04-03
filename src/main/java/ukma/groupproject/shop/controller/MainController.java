@@ -30,6 +30,12 @@ public class MainController extends Controller {
     @FXML private MenuItem suppliesMenuItem;
     @FXML private MenuItem employeesMenuItem;
     @FXML private MenuItem purchasesMenuItem;
+    
+    @FXML private MenuItem summaryMenuItem;
+    @FXML private MenuItem employeeActivityMenuItem;
+    @FXML private MenuItem totalWeekMenuTab;
+    @FXML private MenuItem totalMonthMenuTab;
+    
     @FXML private MenuItem exitMenuItem;
 
     @FXML private TabPane mainTabPane;
@@ -45,13 +51,14 @@ public class MainController extends Controller {
 
     private Map<Controller, Tab> controllerTabs;
 
-    private ItemsTabController itemsTabController;
-    private OrdersTabController ordersTabController;
-    private SuppliersTabController suppliersTabController;
-    private DepartmentsTabController departmentsTabController;
-    private EmployeesTabController employeesTabController;
-    private PurchasesTabController purchasesTabController;
-    private SuppliesTabController suppliesTabController;
+    private ItemsTabController itemsTabController = null;
+    private OrdersTabController ordersTabController = null;
+    private SuppliersTabController suppliersTabController = null;
+    private DepartmentsTabController departmentsTabController = null;
+    private EmployeesTabController employeesTabController = null;
+    private PurchasesTabController purchasesTabController = null;
+    private SuppliesTabController suppliesTabController = null;
+    private SummaryStatsController summaryStatsController = null;
 
     @Override
     public void initialize() {
@@ -97,6 +104,8 @@ public class MainController extends Controller {
         purchasesMenuItem.setOnAction(event -> addTab("Purchases", getPurchasesTabController()));
         suppliesMenuItem.setOnAction(event -> addTab("Supplies", getSuppliesTabController()));
 
+        summaryMenuItem.setOnAction(event -> addTab("Day Summary", getSummaryController()));
+
         exitMenuItem.setOnAction(event -> Platform.exit());
     }
 
@@ -104,9 +113,10 @@ public class MainController extends Controller {
         Tab tab = controllerTabs.get(controller);
         if(tab == null) {
             tab = new Tab(name, controller.getView());
-            mainTabPane.getTabs().add(tab);
             controllerTabs.put(controller, tab);
         }
+        if (!mainTabPane.getTabs().contains(tab))
+            mainTabPane.getTabs().add(tab);
         mainTabPane.getSelectionModel().select(tab);
     }
 
@@ -157,5 +167,11 @@ public class MainController extends Controller {
             suppliesTabController = (SuppliesTabController) fxmlLoader.load("views/SuppliesTab.fxml");
         }
         return suppliesTabController;
+    }
+
+    private SummaryStatsController getSummaryController() {
+        if(summaryStatsController == null)
+        	summaryStatsController = (SummaryStatsController) fxmlLoader.load("views/SummaryStats.fxml");
+        return summaryStatsController;
     }
 }

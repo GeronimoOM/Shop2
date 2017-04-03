@@ -64,7 +64,6 @@ public class EmployeesTabController extends Controller {
 
     @Override
     public void initialize() {
-        employeesTable.prefWidthProperty().bind(((Region) mainController.getView()).widthProperty());
 
         nameColumn.prefWidthProperty().bind(employeesTable.widthProperty().multiply(0.4));
         salaryColumn.prefWidthProperty().bind(employeesTable.widthProperty().multiply(0.2));
