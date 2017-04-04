@@ -4,5 +4,7 @@ import ukma.groupproject.shop.controller.Controller;
 
 public interface SpringFxmlLoader {
 
-    Controller load(String path);
+    Controller load(View view);
+
+    Controller load(String view);
 }

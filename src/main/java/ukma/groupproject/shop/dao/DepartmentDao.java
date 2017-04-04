@@ -8,6 +8,8 @@ public interface DepartmentDao extends Dao<Department, Long> {
 
     List<Department> getAll();
 
+    Department getByName(String name);
+
     Department getWithEmployees(Long id);
 
 }

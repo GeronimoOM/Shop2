@@ -6,22 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -33,42 +25,30 @@ import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.OrderFactory;
 import ukma.groupproject.shop.service.OrderService;
 import ukma.groupproject.shop.service.SupplierService;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 @Component
 @Scope("prototype")
 public class CreateOrderController extends Controller {
 
-	@FXML ListView<Supplier> suppliersList;
-	
-	@FXML Label itemLabel;
-
-	@FXML Button createButton;
-
+	@FXML TextField itemTextField;
 	@FXML TextField amountTextField;
+	@FXML ListView<Supplier> suppliersList;
+	@FXML Button createButton;
 
 	@Autowired private SupplierService supplierService;
 	@Autowired private OrderService orderService;
 	@Autowired private OrderFactory orderFactory;
-
+	@Autowired private MainController mainController;
 
     private Service<List<Supplier>> getSuppliersService;
-
 	private ObservableList<Supplier> suppliers;
-	
-	public ObjectProperty<Item> item;
+	private Item item;
+    private Order order;
 
 	@Override
-	public void initialize()
-	{
-		suppliers = FXCollections.observableList(supplierService.getAll());
-		item = new SimpleObjectProperty<>();
-		item.addListener(new ChangeListener<Item>()
-		{
-			@Override
-			public void changed(ObservableValue<? extends Item> observable, Item oldValue, Item newValue) {
-				itemLabel.setText("Item: " + newValue.getName());
-			}
-		});
+	public void initialize() {
+		suppliers = FXCollections.observableArrayList();
 		
 		getSuppliersService = new Service<List<Supplier>>() {
             @Override
@@ -76,58 +56,63 @@ public class CreateOrderController extends Controller {
                 Task<List<Supplier>> getItemsTask = new Task<List<Supplier>>() {
                     @Override
                     protected List<Supplier> call() throws Exception {
-        				// TODO: show only suppliers that have this item
-                        return supplierService.getAll();
+                        return supplierService.getSupplying(item);
                     }
                 };
                 return getItemsTask;
             }
         };
-        getSuppliersService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-            	suppliers.setAll(getSuppliersService.getValue());
-            }
-        });
-		
+        getSuppliersService.setOnSucceeded(event -> suppliers.setAll(getSuppliersService.getValue()));
+
 		suppliersList.setCellFactory(param -> new ListCell<Supplier>() {
 			@Override
 			protected void updateItem(Supplier supplier, boolean empty) {
 				super.updateItem(supplier, empty);
-				this.setText(supplier == null ? null : supplier.getName());
+				this.setText(supplier == null ? "": supplier.getName());
 			}
 		});
-		
 		suppliersList.setItems(suppliers);
 
 		createButton.setOnAction(e -> {
-       	 	createButton.getParent().getParent().setDisable(true);
-			if (suppliersList.getSelectionModel().getSelectedItem() == null || amountTextField.getText() == "")
-			{
-				Alert alert = new Alert(AlertType.ERROR, "Please choose a supplier\nand specify an amount of item to order.", ButtonType.OK);
-       		 	alert.initModality(Modality.APPLICATION_MODAL);
-       		 	alert.showAndWait();
-			}
-			else
-			{
-				Order o = orderFactory.create(
-						MainController.employee.get(), 
-						suppliersList.getSelectionModel().getSelectedItem(), 
-						item.get(), 
-						Integer.valueOf(amountTextField.getText()));
-				orderService.persist(o);
-				 
-				((Stage) createButton.getScene().getWindow()).close();				
-			}
-       	 	createButton.getParent().getParent().setDisable(false);
-		});
-
-        // only numbers in amount field
-        amountTextField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*")) amountTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            Integer amount = null;
+            try {
+                amount = Integer.parseInt(amountTextField.getText());
+            } catch (NumberFormatException ex) {
+                showErrorAlert("Not a valid amount");
+                return;
             }
-        });
+			if (suppliersList.getSelectionModel().getSelectedItem() == null) {
+                showErrorAlert("No supplier selected");
+                return;
+            }
+            try {
+                Order order = orderFactory.create(
+                        mainController.getEmployee(),
+                        suppliersList.getSelectionModel().getSelectedItem(),
+                        item,
+                        amount);
+                orderService.persist(order);
+                this.order = order;
+                ((Stage) view.getScene().getWindow()).close();
+            } catch (ShopBusinessException ex) {
+                showErrorAlert(ex.getMessage());
+            }
+		});
 	}
+
+	public void setItem(Item item) {
+		this.item = item;
+		itemTextField.setText(item.getName());
+        getSuppliersService.start();
+	}
+
+	public Order getOrder() {
+        return order;
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.showAndWait();
+    }
 }

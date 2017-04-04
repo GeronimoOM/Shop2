@@ -11,9 +11,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ukma.groupproject.shop.model.*;
-import ukma.groupproject.shop.model.model.ItemAmountPrice;
+import ukma.groupproject.shop.model.view.ItemAmountPrice;
 import ukma.groupproject.shop.service.OrderService;
 import ukma.groupproject.shop.service.SupplierService;
 import ukma.groupproject.shop.service.SupplyFactory;
@@ -27,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Scope("prototype")
 public class CreateSupplyController extends Controller {
 
     @FXML private AutoCompleteChoiceTextField<Supplier> supplierTextField;

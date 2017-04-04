@@ -1,7 +1,9 @@
 package ukma.groupproject.shop.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,11 +18,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
@@ -28,85 +25,98 @@ import javafx.stage.Stage;
 import ukma.groupproject.shop.app.SpringJavaFxApplication;
 import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Supplier;
+import ukma.groupproject.shop.model.view.DepartmentView;
+import ukma.groupproject.shop.model.view.SupplierView;
 import ukma.groupproject.shop.service.SupplierService;
+import ukma.groupproject.shop.service.impl.SupplierViewMapper;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 @Component
 @Scope("prototype")
 public class SuppliersTabController extends Controller {
 
-    @FXML private TableView<Supplier> suppliersTable;
-    @FXML private TableColumn<Supplier, String> nameColumn;
-    
+    @FXML private TableView<SupplierView> suppliersTable;
+    @FXML private TableColumn<SupplierView, String> nameColumn;
+
+    @FXML private TextField nameTextField;
     @FXML private Button createButton;
     @FXML private Button editButton;
     @FXML private Button removeButton;
 
     @Autowired private SpringFxmlLoader fxmlLoader;
     @Autowired private SupplierService supplierService;
+    @Autowired private SupplierViewMapper supplierViewMapper;
 
-    private ObservableList<Supplier> suppliers;
-    private Service<List<Supplier>> getSuppliersService;
+    private ObservableList<SupplierView> suppliers;
+    private Service<List<SupplierView>> getSuppliersService;
 
     private CreateSupplierController createSupplierController;
 
     @Override
     public void initialize() {
-        nameColumn.prefWidthProperty().bind(suppliersTable.widthProperty());
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == "") {
+                suppliersTable.setItems(suppliers);
+            } else {
+                suppliersTable.setItems(suppliers.filtered(supplierView -> supplierView.getName().startsWith(newValue)));
+            }
+        });
 
         createButton.setOnAction(e -> {
-            createSupplierController = (CreateSupplierController) fxmlLoader.load("views/CreateSupplier.fxml");
+            createSupplierController = (CreateSupplierController) fxmlLoader.load("CreateSupplier");
             createModal("Create Supplier", createSupplierController).showAndWait();
 
             if(createSupplierController.getSupplier() != null) {
-                suppliers.add(createSupplierController.getSupplier());
+                suppliers.add(supplierViewMapper.mapTo(createSupplierController.getSupplier()));
+            }
+        });
+
+        editButton.setOnAction(event -> {
+            if(suppliersTable.getSelectionModel().getSelectedItem() != null) {
+                EditSupplierController editSupplierController = (EditSupplierController) fxmlLoader.load("EditSupplier");
+                SupplierView supplierView = suppliersTable.getSelectionModel().getSelectedItem();
+                editSupplierController.setSupplier(supplierViewMapper.mapFrom(supplierView));
+                createModal("Edit Supplier", editSupplierController).showAndWait();
+
+                supplierViewMapper.mapTo(editSupplierController.getSupplier(), supplierView);
             }
         });
         
         removeButton.setOnAction(e -> {
-            Supplier s = suppliersTable.getSelectionModel().getSelectedItem();
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete supplier " + s.getName() + "?", ButtonType.YES, ButtonType.NO);
+            SupplierView supplierView = suppliersTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete supplier " + supplierView.getName() + " ?", ButtonType.YES, ButtonType.NO);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
-            if (alert.getResult() == ButtonType.YES)
-            {
-                supplierService.delete(s);
-                refreshSupplierService();
+            if (alert.getResult() == ButtonType.YES) {
+                try {
+                    supplierService.delete(supplierViewMapper.mapFrom(supplierView));
+                    suppliers.remove(supplierView);
+                } catch (ShopBusinessException ex) {
+                    Alert error = new Alert(AlertType.ERROR, ex.getMessage());
+                    error.initModality(Modality.APPLICATION_MODAL);
+                    error.showAndWait();
+                }
             }
         });
 
-    	suppliers = FXCollections.observableList(supplierService.getAll());
-
-        nameColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("name"));
-        
-        getSuppliersService = new Service<List<Supplier>>() {
+        suppliers = FXCollections.observableArrayList();
+        suppliersTable.setItems(suppliers);
+        getSuppliersService = new Service<List<SupplierView>>() {
             @Override
-            protected Task<List<Supplier>> createTask() {
-                Task<List<Supplier>> getSuppliersTask = new Task<List<Supplier>>() {
+            protected Task<List<SupplierView>> createTask() {
+                return new Task<List<SupplierView>>() {
                     @Override
-                    protected List<Supplier> call() throws Exception {
-                        return supplierService.getAll();
+                    protected List<SupplierView> call() throws Exception {
+                        return supplierService.getAll().stream().map(
+                                supplier -> supplierViewMapper.mapTo(supplier)).collect(Collectors.toList());
                     }
                 };
-                return getSuppliersTask;
             }
         };
 
-        refreshSupplierService();
-        
-        getSuppliersService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                suppliers.setAll(getSuppliersService.getValue());
-            }
-        });
-
-        suppliersTable.setItems(suppliers);
-        
-    }
-    
-    void refreshSupplierService()
-    {
-        getSuppliersService.reset();
+        getSuppliersService.setOnSucceeded(event -> suppliers.setAll(getSuppliersService.getValue()));
         getSuppliersService.start();
     }
     

@@ -13,6 +13,7 @@ import java.util.List;
 public class HibernateItemDao extends AbstractHibernateDao<Item, Long> implements ItemDao {
 
     private static final String HQL_SELECT_ALL_ITEMS = "select i from Item i join fetch i.department order by i.name";
+    private static final String HQL_SELECT_ITEM_BY_NAME = "select i from Item i join fetch i.department where i.name=:name";
     private static final String HQL_SELECT_ITEMS_BY_DEPARTMENT = "select i from Item i join fetch i.department where i.department=:department";
     private static final String HQL_SELECT_ITEMS_SUPPLIED_BY = "select s.items from Supplier s where s=:supplier";
 
@@ -23,6 +24,11 @@ public class HibernateItemDao extends AbstractHibernateDao<Item, Long> implement
     @Override
     public List<Item> getAll() {
         return getSession().createQuery(HQL_SELECT_ALL_ITEMS).list();
+    }
+
+    @Override
+    public Item getByName(String name) {
+        return (Item) getSession().createQuery(HQL_SELECT_ITEM_BY_NAME).setParameter("name", name).uniqueResult();
     }
 
     @Override

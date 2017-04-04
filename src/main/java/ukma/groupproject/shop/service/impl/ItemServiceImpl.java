@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ukma.groupproject.shop.dao.ItemDao;
+import ukma.groupproject.shop.dao.OrderDao;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Item;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.ItemService;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 import java.util.List;
 
@@ -15,8 +17,8 @@ import java.util.List;
 @Transactional
 public class ItemServiceImpl implements ItemService{
 
-    @Autowired
-    private ItemDao itemDao;
+    @Autowired private ItemDao itemDao;
+    @Autowired private OrderDao orderDao;
 
     @Override
     public Item get(Long id) {
@@ -25,17 +27,32 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public void persist(Item item) {
-        itemDao.persist(item);
+        validatePriceAndMinAmount(item);
+        if(itemDao.getByName(item.getName()) == null) {
+            itemDao.persist(item);
+        } else {
+            throw new ShopBusinessException("Item name is not unique");
+        }
     }
 
     @Override
     public void update(Item item) {
-        itemDao.update(item);
+        validatePriceAndMinAmount(item);
+        Item byName = itemDao.getByName(item.getName());
+        if(byName == null || byName.equals(item)) {
+            itemDao.update(item);
+        } else {
+            throw new ShopBusinessException("Item name is not unique");
+        }
     }
 
     @Override
     public void delete(Item item) {
-        itemDao.delete(item);
+        if(!orderDao.existOrdersIncluding(item)) {
+            itemDao.delete(item);
+        } else {
+            throw new ShopBusinessException("Item is already in use");
+        }
     }
 
     @Override
@@ -51,5 +68,14 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public List<Item> getSuppliedBy(Supplier supplier) {
         return itemDao.getSuppliedBy(supplier);
+    }
+
+    private void validatePriceAndMinAmount(Item item) {
+        if(item.getPrice() <= 0) {
+            throw new ShopBusinessException("Price must be a positive number");
+        }
+        if(item.getMinAmount() < 0) {
+            throw new ShopBusinessException("Minimum amount must be a positive number");
+        }
     }
 }

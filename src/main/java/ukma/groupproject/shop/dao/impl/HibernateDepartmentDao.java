@@ -10,6 +10,7 @@ import java.util.List;
 public class HibernateDepartmentDao extends AbstractHibernateDao<Department, Long> implements DepartmentDao {
 
     private static final String HQL_SELECT_DEPARTMENTS = "select d from Department d order by d.name";
+    private static final String HQL_SELECT_DEPARTMENT_BY_NAME = "select d from Department d where d.name=:name";
     private static final String HQL_SELECT_DEPARTMENT_WITH_EMPLOYEES = "select d from Department d join fetch d.employees";
 
     public HibernateDepartmentDao() {
@@ -19,6 +20,11 @@ public class HibernateDepartmentDao extends AbstractHibernateDao<Department, Lon
     @Override
     public List<Department> getAll() {
         return getSession().createQuery(HQL_SELECT_DEPARTMENTS).list();
+    }
+
+    @Override
+    public Department getByName(String name) {
+        return (Department) getSession().createQuery(HQL_SELECT_DEPARTMENT_BY_NAME).setParameter("name", name).uniqueResult();
     }
 
     @Override

@@ -56,9 +56,7 @@ public class SuppliesTabController extends Controller {
             @Override
             protected void updateItem(Date date, boolean empty) {
                 super.updateItem(date, empty);
-                if(!empty) {
-                    setText(dateFormat.format(date));
-                }
+                setText(empty ? "" : dateFormat.format(date));
             }
         });
         supplierColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSupplier()));

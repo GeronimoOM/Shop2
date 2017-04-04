@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.jboss.jandex.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -64,55 +65,45 @@ public class PurchasesTabController extends Controller {
 
     private Service<List<Purchase>> getPurchasesService;
 
-    @Autowired
-    private SpringFxmlLoader fxmlLoader;
+    @Autowired private SpringFxmlLoader fxmlLoader;
+    @Autowired private MainController mainController;
 
     private CreatePurchaseController createPurchaseController;
     private Scene createPurchaseScene;
 
     @Override
-    public void initialize() 
-    {
-        createButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	getView().setDisable(true);
-                createPurchaseController = (CreatePurchaseController) fxmlLoader.load("views/CreatePurchase.fxml");
-            	createPurchaseScene = new Scene((Parent) createPurchaseController.getView());
-            	createPurchaseScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
+    public void initialize() {
+        createButton.setOnAction(e -> {
+            getView().setDisable(true);
+            createPurchaseController = (CreatePurchaseController) fxmlLoader.load("CreatePurchase");
+            createPurchaseScene = new Scene((Parent) createPurchaseController.getView());
+            createPurchaseScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
 
-            	Stage createPurchaseStage = new Stage();
-            	createPurchaseStage.setTitle("Create New Purchase");
-            	createPurchaseStage.setScene(createPurchaseScene);
-            	createPurchaseStage.initModality(Modality.APPLICATION_MODAL); 
-            	createPurchaseStage.initOwner(getView().getScene().getWindow());
-            	createPurchaseStage.showAndWait();
-        		refreshPurchaseService();
-            	getView().setDisable(false);
-            }
+            Stage createPurchaseStage = new Stage();
+            createPurchaseStage.setTitle("Create New Purchase");
+            createPurchaseStage.setScene(createPurchaseScene);
+            createPurchaseStage.initModality(Modality.APPLICATION_MODAL);
+            createPurchaseStage.initOwner(getView().getScene().getWindow());
+            createPurchaseStage.showAndWait();
+            refreshPurchaseService();
+            getView().setDisable(false);
         });
-        createButton.setDisable(MainController.employee.get() == null);
-        MainController.employee.addListener(new ChangeListener<Employee>() {
-			@Override
-			public void changed(ObservableValue<? extends Employee> observable, Employee oldValue, Employee newValue) {
-				createButton.setDisable(newValue == null);
-			}
-        });
+        createButton.setDisable(mainController.getEmployee() == null);
+        mainController.employeeProperty().addListener((observable, oldValue, newValue) -> createButton.setDisable(newValue == null));
         
-        removeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-            	Purchase p = purchasesTable.getSelectionModel().getSelectedItem();
-            	Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this purchase?", ButtonType.YES, ButtonType.NO);
-            	alert.initModality(Modality.APPLICATION_MODAL);
-            	alert.showAndWait();
-            	if (alert.getResult() == ButtonType.YES)
-            	{
-            		purchaseService.delete(p);
-            		refreshPurchaseService();
-            	}
+        removeButton.setOnAction(e -> {
+            Purchase p = purchasesTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this purchase?", ButtonType.YES, ButtonType.NO);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.YES)
+            {
+                purchaseService.delete(p);
+                refreshPurchaseService();
             }
         });
 
-    	purchases = FXCollections.observableList(purchaseService.getAllWithItems());
+    	purchases = FXCollections.observableArrayList();
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date") );
         DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
@@ -120,9 +111,7 @@ public class PurchasesTabController extends Controller {
             @Override
             protected void updateItem(Date date, boolean empty) {
                 super.updateItem(date, empty);
-                if(!empty) {
-                    setText(dateFormat.format(date));
-                }
+                setText(empty ? "" : dateFormat.format(date));
             }
         });
         
@@ -131,10 +120,8 @@ public class PurchasesTabController extends Controller {
             @Override
             protected void updateItem(List<PurchaseItem> items, boolean empty) {
                 super.updateItem(items, empty);
-                if (!empty) {
-                    setText(items.stream().map(i -> i.getItem().getName() + " [" + i.getAmount() + "]")
-                    		.collect(Collectors.joining(", ")));
-                }
+                setText(empty ? "" : items.stream().map(i -> i.getItem().getName() + " [" + i.getAmount() + "]")
+                        .collect(Collectors.joining(", ")));
             }
         });
     	    
@@ -150,21 +137,12 @@ public class PurchasesTabController extends Controller {
                 return getPurchasesTask;
             }
         };
-
-        refreshPurchaseService();
-        
-        getPurchasesService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                purchases.setAll(getPurchasesService.getValue());
-            }
-        });
-
+        getPurchasesService.setOnSucceeded(event -> purchases.setAll(getPurchasesService.getValue()));
         purchasesTable.setItems(purchases);
+        getPurchasesService.start();
     }
     
-    void refreshPurchaseService()
-    {
+    void refreshPurchaseService() {
         getPurchasesService.reset();
         getPurchasesService.start();
     }    

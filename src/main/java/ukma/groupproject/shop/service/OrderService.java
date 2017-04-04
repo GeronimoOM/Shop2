@@ -12,8 +12,6 @@ public interface OrderService {
 
     void persist(Order order);
 
-    void update(Order order);
-
     void delete(Order order);
 
     List<Order> getOrdersBy(Employee employee);
@@ -21,6 +19,6 @@ public interface OrderService {
     List<Order> getOrdersFor(Supplier supplier);
 
     List<Order> getActiveOrdersFor(Supplier supplier);
-    
+
     List<Order> getAll();
 }

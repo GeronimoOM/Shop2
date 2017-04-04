@@ -56,6 +56,7 @@ public class CreatePurchaseController extends Controller {
     @Autowired private ItemService itemService;
     @Autowired private PurchaseService purchaseService;
     @Autowired private PurchaseFactory purchaseFactory;
+	@Autowired private MainController mainController;
 
     private ObservableList<Item> allItems;
     private ObservableList<ItemAmount> addedItems;
@@ -155,7 +156,7 @@ public class CreatePurchaseController extends Controller {
             	 }
             	 else
             	 {
-            		 Purchase p = purchaseFactory.create(MainController.employee.get(), addedItemsData);
+            		 Purchase p = purchaseFactory.create(mainController.getEmployee(), addedItemsData);
             		 purchaseService.persist(p);
 
             		 ((Stage) createButton.getScene().getWindow()).close();
@@ -172,5 +173,4 @@ public class CreatePurchaseController extends Controller {
              }
          });
     }
-    
 }

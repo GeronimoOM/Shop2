@@ -1,11 +1,13 @@
 package ukma.groupproject.shop.controller;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.animation.*;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -14,17 +16,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.jboss.jandex.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,70 +33,81 @@ import ukma.groupproject.shop.context.SpringFxmlLoader;
 import ukma.groupproject.shop.model.Department;
 import ukma.groupproject.shop.model.Employee;
 import ukma.groupproject.shop.model.Item;
+import ukma.groupproject.shop.model.view.DepartmentView;
+import ukma.groupproject.shop.model.view.ItemView;
 import ukma.groupproject.shop.service.DepartmentService;
 import ukma.groupproject.shop.service.ItemService;
+import ukma.groupproject.shop.service.impl.DepartmentViewMapper;
+import ukma.groupproject.shop.service.impl.ItemViewMapper;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
 public class ItemsTabController extends Controller {
 
+    @FXML private TextField nameTextField;
+    @FXML private CheckBox runningOutCheckBox;
     @FXML private ChoiceBox<Department> departmentChoiceBox;
-    @FXML private TableView<Item> itemsTable;
-    @FXML private TableColumn<Item, String> nameColumn;
-    @FXML private TableColumn<Item, Integer> amountColumn;
-    @FXML private TableColumn<Item, Integer> minAmountColumn;
-    @FXML private TableColumn<Item, Department> departmentColumn;
-    
-    @FXML private Button createButton;
+    @FXML private TableView<ItemView> itemsTable;
+    @FXML private TableColumn<ItemView, String> nameColumn;
+    @FXML private TableColumn<ItemView, Float> priceColumn;
+    @FXML private TableColumn<ItemView, Integer> amountColumn;
+    @FXML private TableColumn<ItemView, Integer> minAmountColumn;
+    @FXML private TableColumn<ItemView, Department> departmentColumn;
 
+    @FXML private Button orderButton;
+    @FXML private Button createButton;
+    @FXML private Button editButton;
+    @FXML private Button removeButton;
+
+    @Autowired private MainController mainController;
     @Autowired private ItemService itemService;
     @Autowired private DepartmentService departmentService;
+    @Autowired private ItemViewMapper itemViewMapper;
 
-    private ObservableList<Item> items;
+    private ObservableList<ItemView> items;
+    private ObservableList<ItemView> filteredItems;
     private ObservableList<Department> departments;
-
-    private BooleanProperty isItemsTableReloading;
-    private BooleanProperty isSingleDepartmentMode;
+    private BooleanProperty filtersChanged;
+    private Predicate<ItemView> nameFilter;
+    private Predicate<ItemView> runningOutFilter;
+    private Predicate<ItemView> departmentFilter;
 
     private Service<List<Item>> getItemsService;
 
-    private static final int DEPARTMENT_COLUMN_HIDE_ANIMATION_DURATION_MILLIS = 200;
-    private Timeline departmentColumnHideAnimation;
-    private Timeline departmentColumnShowAnimation;
-
     @Autowired
     private SpringFxmlLoader fxmlLoader;
-    
-    private Scene createOrderScene;
-    private CreateOrderController createOrderController;
 
     @Override
     public void initialize() {
-        items = FXCollections.observableList(itemService.getAll());
-        departments = FXCollections.observableList(departmentService.getAll());
-        departments.add(0, null);
+        items = FXCollections.observableArrayList();
+        itemsTable.setItems(items);
 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("name"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("amount"));
-        minAmountColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("minAmount"));
-        departmentColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getDepartment()));
-        departmentColumn.setCellFactory(new Callback<TableColumn<Item, Department>, TableCell<Item, Department>>() {
+        nameColumn.prefWidthProperty().bind(itemsTable.widthProperty().multiply(0.28));
+        priceColumn.prefWidthProperty().bind(itemsTable.widthProperty().multiply(0.2));
+        amountColumn.prefWidthProperty().bind(itemsTable.widthProperty().multiply(0.15));
+        minAmountColumn.prefWidthProperty().bind(itemsTable.widthProperty().multiply(0.15));
+        departmentColumn.prefWidthProperty().bind(itemsTable.widthProperty().multiply(0.2));
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        minAmountColumn.setCellValueFactory(new PropertyValueFactory<>("minAmount"));
+        departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+        departmentColumn.setCellFactory(param -> new TableCell<ItemView, Department>() {
             @Override
-            public TableCell<Item, Department> call(TableColumn<Item, Department> param) {
-                return new TableCell<Item, Department>() {
-                    @Override
-                    protected void updateItem(Department department, boolean empty) {
-                        super.updateItem(department, empty);
-                        if(!empty) {
-                            setText(department.getName());
-                        }
-                    }
-                };
+            protected void updateItem(Department department, boolean empty) {
+                super.updateItem(department, empty);
+                setText(empty ? "" : department.getName());
             }
         });
 
+        departments = FXCollections.observableList(departmentService.getAll());
+        departments.add(0, null);
         departmentChoiceBox.setConverter(new StringConverter<Department>() {
             @Override
             public String toString(Department department) {
@@ -110,116 +120,110 @@ public class ItemsTabController extends Controller {
             }
         });
 
-        isItemsTableReloading = new SimpleBooleanProperty(false);
-        itemsTable.disableProperty().bind(isItemsTableReloading);
-        departmentChoiceBox.disableProperty().bind(isItemsTableReloading);
-
-        isSingleDepartmentMode = new SimpleBooleanProperty(false);
-        isSingleDepartmentMode.bind(departmentChoiceBox.getSelectionModel().selectedItemProperty().isNotNull());
-        departmentChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Department>() {
-            @Override
-            public void changed(ObservableValue<? extends Department> observable, Department oldValue, final Department newValue) {
-                getItemsService.reset();
-                getItemsService.start();
+        filtersChanged = new SimpleBooleanProperty(false);
+        filtersChanged.addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
+                itemsTable.setItems(getFilteredItems());
+                filtersChanged.set(false);
             }
         });
+
+        nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            nameFilter = newValue == "" ? null : itemView -> itemView.getName().startsWith(newValue);
+            filtersChanged.set(true);
+        });
+
+        runningOutCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            runningOutFilter = !newValue ? null: itemView -> itemView.getAmount() < itemView.getMinAmount();
+            filtersChanged.set(true);
+        });
+
+        departmentChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            departmentFilter = newValue == null ? null: itemView -> itemView.getDepartment().equals(newValue);
+            filtersChanged.set(true);
+        });
+
         departmentChoiceBox.setItems(departments);
         departmentChoiceBox.getSelectionModel().select(0);
 
-        initializeServices();
-        initializeAnimations();
-
-        itemsTable.setItems(items);
-        
-        // disable or enable create order button depending on the fact of employee has logged in
-        createButton.setDisable(MainController.employee.get() == null);
-        MainController.employee.addListener(new ChangeListener<Employee>() {
-			@Override
-			public void changed(ObservableValue<? extends Employee> observable, Employee oldValue, Employee newValue) {
-				createButton.setDisable(newValue == null || itemsTable.getSelectionModel().getSelectedItem() == null);
-			}
-        });
-        itemsTable.getSelectionModel().selectedItemProperty().addListener(event -> {
-        	createButton.setDisable(MainController.employee.get() == null || itemsTable.getSelectionModel().getSelectedItem() == null);
-        });
-        
-        createButton.setOnAction(event -> {
-        	getView().setDisable(true);
-            
-        	createOrderController = (CreateOrderController) fxmlLoader.load("views/CreateOrder.fxml");
-            createOrderController.item.set(itemsTable.getSelectionModel().getSelectedItem());
-            
-            createOrderScene = new Scene((Parent) createOrderController.getView());
-            createOrderScene.getStylesheets().add(SpringJavaFxApplication.STYLESHEETS);
-
-            Stage createOrderStage = new Stage();
-            createOrderStage.setTitle("Create New Order");
-            createOrderStage.setScene(createOrderScene);
-            createOrderStage.initModality(Modality.APPLICATION_MODAL);
-            createOrderStage.initOwner(getView().getScene().getWindow());
-            createOrderStage.showAndWait();
-
-            getView().setDisable(false);
-        });
-    }
-
-    private void initializeServices() {
         getItemsService = new Service<List<Item>>() {
             @Override
             protected Task<List<Item>> createTask() {
                 Task<List<Item>> getItemsTask = new Task<List<Item>>() {
                     @Override
                     protected List<Item> call() throws Exception {
-                        return departmentChoiceBox.getValue() == null ? itemService.getAll():
-                                itemService.getByDepartment(departmentChoiceBox.getValue());
+                        return itemService.getAll();
                     }
                 };
                 return getItemsTask;
             }
         };
-        getItemsService.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                items.setAll(getItemsService.getValue());
+        getItemsService.setOnSucceeded(event ->
+                items.setAll(getItemsService.getValue().stream().map(item -> itemViewMapper.mapTo(item)).collect(Collectors.toList())));
+        getItemsService.start();
+
+        orderButton.disableProperty().bind(mainController.employeeProperty().isNull());
+        orderButton.setOnAction(event -> {
+            if(itemsTable.getSelectionModel().getSelectedItem() != null) {
+                CreateOrderController createOrderController = (CreateOrderController) fxmlLoader.load("CreateOrder");
+                createOrderController.setItem(itemViewMapper.mapFrom(itemsTable.getSelectionModel().getSelectedItem()));
+                createModal("Create Order", createOrderController).showAndWait();
+
+                if (createOrderController.getOrder() != null) {
+                    mainController.getOrdersTabController().getOrders().add(createOrderController.getOrder());
+                }
             }
         });
-        getItemsService.stateProperty().addListener(new ChangeListener<Worker.State>() {
-            @Override
-            public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldState, Worker.State newState) {
-                switch (newState) {
-                    case SCHEDULED:
-                        isItemsTableReloading.setValue(Boolean.TRUE);
-                        break;
-                    case CANCELLED: case FAILED: case SUCCEEDED:
-                        isItemsTableReloading.setValue(Boolean.FALSE);
+
+        createButton.setOnAction(event -> {
+            CreateItemController createItemController = (CreateItemController) fxmlLoader.load("CreateItem");
+            createModal("Create Item", createItemController).showAndWait();
+
+            if(createItemController.getItem() != null) {
+                items.add(itemViewMapper.mapTo(createItemController.getItem()));
+            }
+        });
+
+        editButton.setOnAction(event -> {
+            if(itemsTable.getSelectionModel().getSelectedItem() != null) {
+                EditItemController editItemController = (EditItemController) fxmlLoader.load("EditItem");
+                ItemView itemView = itemsTable.getSelectionModel().getSelectedItem();
+                editItemController.setItem(itemViewMapper.mapFrom(itemView));
+                createModal("Edit Department", editItemController).showAndWait();
+
+                itemViewMapper.mapTo(editItemController.getItem(), itemView);
+            }
+        });
+
+        removeButton.setOnAction(event -> {
+            ItemView item = itemsTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete item " + item.getName() + " ?", ButtonType.YES, ButtonType.NO);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.YES) {
+                try {
+                    itemService.delete(itemViewMapper.mapFrom(item));
+                    items.remove(item);
+                } catch (ShopBusinessException ex) {
+                    Alert error = new Alert(Alert.AlertType.ERROR, ex.getMessage());
+                    error.initModality(Modality.APPLICATION_MODAL);
+                    error.showAndWait();
                 }
             }
         });
     }
 
-    private void initializeAnimations() {
-        nameColumn.prefWidthProperty().bind(itemsTable.widthProperty()
-                .subtract(amountColumn.widthProperty()
-                        .add(minAmountColumn.widthProperty())
-                        .add(departmentColumn.widthProperty())));
-
-        departmentColumn.visibleProperty().bind(departmentColumn.widthProperty().isNotEqualTo(0));
-
-        departmentColumnHideAnimation = new Timeline(new KeyFrame(Duration.millis(DEPARTMENT_COLUMN_HIDE_ANIMATION_DURATION_MILLIS),
-                new KeyValue(departmentColumn.prefWidthProperty(), 0)));
-
-        departmentColumnShowAnimation = new Timeline(new KeyFrame(Duration.millis(DEPARTMENT_COLUMN_HIDE_ANIMATION_DURATION_MILLIS),
-                new KeyValue(departmentColumn.prefWidthProperty(), 300)));
-
-        isSingleDepartmentMode.addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(newValue) {
-                    departmentColumnHideAnimation.play();
-                } else {
-                    departmentColumnShowAnimation.play();
-                }
-            }
-        });
+    private ObservableList<ItemView> getFilteredItems() {
+        ObservableList<ItemView> filteredItems = new FilteredList<>(items);
+        if(nameFilter != null) {
+            filteredItems = filteredItems.filtered(nameFilter);
+        }
+        if(runningOutCheckBox.isSelected()) {
+            filteredItems = filteredItems.filtered(runningOutFilter);
+        }
+        if(departmentFilter != null) {
+            filteredItems = filteredItems.filtered(departmentFilter);
+        }
+        return filteredItems;
     }
 }

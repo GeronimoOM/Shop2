@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="BorderPane" maxHeight="-1.0" maxWidth="-1.0" minHeight="-1.0" minWidth="-1.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ukma.groupproject.shop.controller.EditItemController">
+    <bottom>
+        <BorderPane>
+            <center>
+                <Button fx:id="editButton" mnemonicParsing="false" text="Edit" />
+            </center>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+        </BorderPane>
+    </bottom>
+    <center>
+        <VBox alignment="CENTER_LEFT" prefWidth="350.0" spacing="10.0">
+            <children>
+                <Label text="Name" />
+                <TextField fx:id="nameTextField" />
+                <Label text="Price" />
+                <TextField fx:id="priceTextField" />
+                <Label text="Minimum amount" />
+                <TextField fx:id="minAmountTextField" />
+                <Label text="Department" />
+                <TextField fx:id="departmentTextField" editable="false" prefWidth="322.0" />
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </center>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</BorderPane>

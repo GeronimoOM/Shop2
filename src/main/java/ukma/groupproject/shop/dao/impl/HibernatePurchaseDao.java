@@ -9,8 +9,8 @@ import ukma.groupproject.shop.model.Purchase;
 @Repository
 public class HibernatePurchaseDao extends AbstractHibernateDao<Purchase, Long> implements PurchaseDao {
 
-    private static final String HQL_SELECT_ALL_PURCHASES = "select p from Purchase p";
-    private static final String HQL_SELECT_ALL_PURCHASES_WITH_ITEMS = "select p from Purchase p join fetch p.items";
+    private static final String HQL_SELECT_ALL_PURCHASES = "select p from Purchase p join fetch p.employee";
+    private static final String HQL_SELECT_ALL_PURCHASES_WITH_ITEMS = "select p from Purchase p join fetch p.employee join fetch p.items";
 
     public HibernatePurchaseDao() {
         super(Purchase.class);

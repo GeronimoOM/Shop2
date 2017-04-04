@@ -1,4 +1,4 @@
-package ukma.groupproject.shop.model.model;
+package ukma.groupproject.shop.model.view;
 
 import javafx.beans.property.*;
 import ukma.groupproject.shop.model.Item;

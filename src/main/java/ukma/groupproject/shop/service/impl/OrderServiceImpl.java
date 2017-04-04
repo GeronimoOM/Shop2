@@ -9,6 +9,7 @@ import ukma.groupproject.shop.model.Order;
 import ukma.groupproject.shop.model.Supplier;
 import ukma.groupproject.shop.service.OrderService;
 import ukma.groupproject.shop.service.SupplierService;
+import ukma.groupproject.shop.service.util.ShopBusinessException;
 
 import java.util.List;
 
@@ -30,14 +31,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void update(Order order) {
-        orderDao.update(order);
-    }
-
-    @Override
     public void delete(Order order) {
-        //TODO Unless fulfilled
-        orderDao.delete(order);
+        if(orderDao.get(order.getId()).getSupply() == null) {
+            orderDao.delete(order);
+        } else {
+            throw new ShopBusinessException("Order is already fulfilled");
+        }
+
     }
 
     @Override

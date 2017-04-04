@@ -9,17 +9,10 @@ import ukma.groupproject.shop.app.SpringJavaFxApplication;
 
 public abstract class Controller {
 
-    private Node view;
+    protected Node view;
 
-    public Node getView() {
-        return view;
-    }
+    public abstract void initialize();
 
-    public void setView(Node view) {
-        this.view = view;
-    }
-
-    public void initialize() {}
 
     protected Stage createModal(String title, Controller controller) {
         Scene modalScene = new Scene((Parent) controller.getView());
@@ -32,4 +25,13 @@ public abstract class Controller {
         modalStage.initOwner(getView().getScene().getWindow());
         return modalStage;
     }
+
+    public Node getView() {
+        return view;
+    }
+
+    public void setView(Node view) {
+        this.view = view;
+    }
+
 }

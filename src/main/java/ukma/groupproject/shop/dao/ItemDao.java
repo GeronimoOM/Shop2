@@ -10,6 +10,8 @@ public interface ItemDao extends Dao<Item, Long> {
 
     List<Item> getAll();
 
+    Item getByName(String name);
+
     List<Item> getByDepartment(Department department);
 
     List<Item> getSuppliedBy(Supplier supplier);

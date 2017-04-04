@@ -28,12 +28,21 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void persist(Department department) {
-        departmentDao.persist(department);
+        if(departmentDao.getByName(department.getName()) == null) {
+            departmentDao.persist(department);
+        } else {
+            throw new ShopBusinessException("Department name is not unique");
+        }
     }
 
     @Override
     public void update(Department department) {
-        departmentDao.update(department);
+        Department byName = departmentDao.getByName(department.getName());
+        if(byName == null || byName.equals(department)) {
+            departmentDao.update(department);
+        } else {
+            throw new ShopBusinessException("Department name is not unique");
+        }
     }
 
     @Override
